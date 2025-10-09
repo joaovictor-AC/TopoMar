@@ -7,15 +7,14 @@ export default function RootLayout() {
         name="index"
         options={
           {
-            headerTitle: "Home",
+            headerTitle: "Test",
             headerTitleAlign: "center"
           }
         } />
       <Stack.Screen
-        name="camera"
+        name="screens/CameraScreen/camera"
         options={{
           headerTitle: "Camera",
-          headerTitleAlign: "center"
         }} />
 
     </Stack>
