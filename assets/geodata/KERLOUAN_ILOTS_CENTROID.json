@@ -1,0 +1,176 @@
+{
+	"type":"FeatureCollection",
+	"features":[
+		{
+			"type":"Feature",
+			"properties":{
+				"featureType":"îlot",
+				"nom":"Karreg Mari Go"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.416968108094904,48.65896651680429]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"featureType":"îlot",
+				"nom":"Ar Gouelini"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.414275914849931,48.66205444022379]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"featureType":"îlot",
+				"nom":"Roc'h ar Roeioù"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.417564377242092,48.65508221397272]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"featureType":"îlot",
+				"nom":"Roc'h Kola"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.421096620461013,48.65840671599938]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"featureType":"îlot",
+				"nom":"Pil Sounnda Veaz"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.445065314144896,48.657084640937164]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"featureType":"îlot",
+				"nom":"Pil Plad"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.443429699477527,48.657237006065614]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"featureType":"îlot",
+				"nom":"Leguestenn Vihan"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.443876145539523,48.654779318340445]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"featureType":"îlot",
+				"nom":"Ulvennoù Kreiz"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.450054166434758,48.65891602733731]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"featureType":"îlot",
+				"nom":"Koz Stal Goz"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.411957947837418,48.655161383623586]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"featureType":"îlot",
+				"nom":"Brellum Goz Vihan"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.430263229094249,48.655908898466315]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"featureType":"îlot",
+				"nom":"Brellum Goz"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.429221105756054,48.65724734789476]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"featureType":"îlot",
+				"nom":"Brellum"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4319780789115,48.6588501113928]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"featureType":"îlot",
+				"nom":"Koz Stal Nevez"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4115702927828995,48.65489780849136]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"featureType":"îlot",
+				"nom":"ENEZ HAMON AR ROUZ"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.436752413305712,48.65699077479682]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"featureType":"îlot",
+				"nom":"Roc'h Charlez"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.420494018627588,48.65900366568303]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"featureType":"îlot",
+				"nom":"Brestou"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.439421723488684,48.659972596426115]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"featureType":"îlot",
+				"nom":"Pil Sounn d'an Aod"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.445167284202816,48.65532643751894]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"featureType":"îlot",
+				"nom":"Mean Feizog"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.45961640347648,48.655383165220655]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"featureType":"îlot",
+				"nom":"Leguestenn Vraz"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.445929435027254,48.65474640491286]}
+		}
+	]
+	}
