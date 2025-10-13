@@ -1,59 +1,61 @@
-import * as Location from 'expo-location';
+import { DeviceMotion, Magnetometer } from 'expo-sensors';
 import { useEffect, useState } from 'react';
 
-/**
- * Hook que retorna a orientação do dispositivo (heading) de 0 a 360 graus,
- * onde 0 é o Norte Verdadeiro.
- * Utiliza o Location.watchHeadingAsync para maior precisão e estabilidade,
- * combinando dados do magnetômetro, acelerômetro e giroscópio.
- * Inclui um filtro de suavização para movimentos mais fluidos.
- */
 export const useDeviceOrientation = () => {
-    const [heading, setHeading] = useState(0);
-    
-    // Fator de suavização. Valor menor = mais suave, porém com mais latência.
-    // Um bom valor inicial é entre 0.1 e 0.2.  
-    const SMOOTHING_FACTOR = 0.1;
+  const [pitch, setPitch] = useState(90);   // inclinaison verticale
+  const [yaw, setYaw] = useState(0);        // direction horizontale
 
-    useEffect(() => {
-        let subscription: Location.LocationSubscription | null = null;
+  const smoothingWindow = 15;               // taille de la moyenne glissante
+  const pitchValues: number[] = [];
+  const yawValues: number[] = [];
+  const threshold = 0.5;                    // seuil de variation minimale en degrés
 
-        const startWatching = async () => {
-            // Pede permissão para acessar a localização, que é necessária para o heading.
-            const { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                console.error('Permissão de localização negada. O heading não pode ser obtido.');
-                return;
-            }
+  useEffect(() => {
+    DeviceMotion.requestPermissionsAsync();
+    Magnetometer.requestPermissionsAsync();
 
-            // Inicia o monitoramento da orientação do dispositivo.
-            subscription = await Location.watchHeadingAsync((headingData) => {
-                // headingData.trueHeading é a direção em graus para o Norte Verdadeiro.
-                // Usamos 'trueHeading' pois é baseado em dados geográficos, não magnéticos.
-                if (typeof headingData.trueHeading === 'number' && headingData.trueHeading >= 0) {
-                    const newHeading = headingData.trueHeading;
-                    
-                    // ADICIONADO: Filtro de suavização (Interpolação Linear)
-                    // Isso evita que os marcadores "tremam" na tela.
-                    setHeading((prevHeading) => {
-                        // Se a diferença for muito grande (ex: de 359° para 1°), pulamos a suavização
-                        if (Math.abs(newHeading - prevHeading) > 180) {
-                            return newHeading;
-                        }
+    // 🔹 Listener pour la rotation (pitch)
+    const motionSub = DeviceMotion.addListener((motionData) => {
+      if (motionData.rotation) {
+        const betaDeg = motionData.rotation.beta * (180 / Math.PI);
+        pitchValues.push(betaDeg);
+        if (pitchValues.length > smoothingWindow) pitchValues.shift();
 
-                        return prevHeading * (1 - SMOOTHING_FACTOR) + newHeading * SMOOTHING_FACTOR;
-                    });
-                }
-            });
-        };
+        const avgPitch =
+          pitchValues.reduce((sum, v) => sum + v, 0) / pitchValues.length;
 
-        startWatching();
+        // N’applique la mise à jour que si le changement est significatif
+        if (Math.abs(avgPitch - pitch) > threshold) {
+          setPitch(avgPitch);
+        }
+      }
+    });
 
-        // Limpa a inscrição ao desmontar o componente para evitar vazamentos de memória.
-        return () => {
-            subscription?.remove();
-        };
-    }, []);
+    // 🔹 Listener pour la boussole (yaw)
+    const magSub = Magnetometer.addListener((magData) => {
+      const { x, y } = magData;
+      const angle = Math.atan2(y, x) * (180 / Math.PI);
+      const yawDeg = (angle + 360) % 360; // direction en degrés 0-360°
 
-    return heading;
+      yawValues.push(yawDeg);
+      if (yawValues.length > smoothingWindow) yawValues.shift();
+
+      const avgYaw =
+        yawValues.reduce((sum, v) => sum + v, 0) / yawValues.length;
+
+      if (Math.abs(avgYaw - yaw) > threshold) {
+        setYaw(avgYaw);
+      }
+    });
+
+    // 🔹 Réduire la fréquence d’échantillonnage pour limiter le bruit
+    DeviceMotion.setUpdateInterval(100); // 10 fois par seconde
+
+    return () => {
+      motionSub.remove();
+      magSub.remove();
+    };
+  }, []);
+
+  return { pitch, yaw };
 };

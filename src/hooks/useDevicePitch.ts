@@ -1,35 +1,47 @@
 import { DeviceMotion } from 'expo-sensors';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-// Este hook retorna a inclinação vertical (pitch) do dispositivo em graus.
-// 90° = celular na vertical, apontando para o horizonte.
-// 0° = celular deitado com a tela para cima.
-// Valores abaixo de 90° significam que está apontado para baixo.
+// Ce hook retourne l'inclinaison verticale (pitch) du téléphone en degrés.
+// 90° = téléphone vertical (vers l'horizon), 0° = téléphone à plat.
 export const useDevicePitch = () => {
-  const [pitch, setPitch] = useState(90);
+  const [pitch, setPitch] = useState<number>(90); // Valeur initiale
+  const smoothingWindow = 20; // Nombre d'échantillons pour la moyenne glissante
+  const values = useRef<number[]>([]); // Stocke les dernières valeurs
 
   useEffect(() => {
-    // Pede permissão para usar os sensores de movimento
+    // Demande la permission pour accéder aux capteurs
     DeviceMotion.requestPermissionsAsync();
 
-    // Adiciona um listener para o DeviceMotion
+    // Abonnement aux données du capteur
     const subscription = DeviceMotion.addListener((deviceMotionData) => {
       if (deviceMotionData.rotation) {
-        // 'beta' é o ângulo de inclinação (pitch) em radianos.
+        // 'beta' correspond à l'inclinaison avant/arrière en radians
         const betaRad = deviceMotionData.rotation.beta;
-        
-        // Converte de radianos para graus
         const betaDeg = betaRad * (180 / Math.PI);
-        
-        // O valor de beta quando o celular está na vertical é 90.
-        // Nós ajustamos para que o nosso 'pitch' reflita isso.
-        setPitch(betaDeg);
+
+        // Ajoute la nouvelle valeur
+        values.current.push(betaDeg);
+
+        // Garde seulement les 'smoothingWindow' dernières valeurs
+        if (values.current.length > smoothingWindow) {
+          values.current.shift();
+        }
+
+        // Calcule la moyenne glissante
+        const avg =
+          values.current.reduce((sum, v) => sum + v, 0) /
+          values.current.length;
+
+        if (Math.abs(avg - pitch) > 0.5) { // seuil de 0.5 degré
+          setPitch(avg);
+        }
       }
     });
 
-    // Define a frequência de atualização para ser suave
+    // Réduit la fréquence d’échantillonnage (ici 10 fois par seconde)
     DeviceMotion.setUpdateInterval(100);
 
+    // Nettoyage à la fin
     return () => {
       subscription.remove();
     };
