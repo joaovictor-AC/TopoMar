@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 export default function Index() {
   return (
-    <    style={styles.container}>
+    <View    style={styles.container}>
       <Text style={styles.text}>Edit app/index.tsx to edit this screen.</Text>
       <Link href={"/screens/CameraScreen/camera"} style={styles.button}> Go to camera </Link>
     </View>
