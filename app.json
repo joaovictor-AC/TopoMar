@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "ToponymieMarine",
-    "slug": "ToponymieMarine",
+    "name": "TopoMar",
+    "slug": "TopoMar",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "toponymiemarine",
+    "scheme": "topomar",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -19,8 +19,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false,
-      "package": "com.joaovictorac.ToponymieMarine"
+      "predictiveBackGestureEnabled": false
     },
     "web": {
       "output": "static",
