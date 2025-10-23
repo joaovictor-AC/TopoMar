@@ -3,3 +3,16 @@ export type Coordinates = {
   latitude: number;
   longitude: number;
 };
+
+export type Feature= {
+  type: string;
+  properties: {
+    featureType: string;
+    hauteurAuDessusNiveauMer: string;
+    nom: string;
+  };
+  geometry: {
+    type: string;
+    coordinates: number[];
+  };
+}

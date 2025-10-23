@@ -56,7 +56,7 @@ export default function CameraScreen() {
                     latitude: coords[1],
                     longitude: coords[0],
                 };
-                
+
                 // Calculate distance and bearing to the target feature
                 const distanceMark = calculateDistance(location.coords, locationTarget)
                 const targetBearing = calculateBearing(location.coords, locationTarget);
@@ -81,7 +81,7 @@ export default function CameraScreen() {
                 // Dynamic style for marker: position, scale, and opacity based on distance
                 const dynamicStyle = {
                     transform: [
-                        { translateX: -feature.properties.nom.length},
+                        { translateX: -feature.properties.nom.length },
                         { scale: Math.max(0.4, 1.5 - distanceMark / 2000) },
                     ],
                     opacity: Math.max(0.6, 1 - distance / 4000),
@@ -101,6 +101,12 @@ export default function CameraScreen() {
                     >
                         <Text style={styles.markerText}>{feature.properties.nom}</Text>
                         <Text style={styles.markerDistanceText}>{distanceText}</Text>
+
+                        {(feature.properties.hauteurAuDessusNiveauMer) ?
+                            <Text style={styles.markerDistanceText}>
+                                {feature.properties.hauteurAuDessusNiveauMer} m
+                            </Text> : null}
+
                     </View>
                 );
             })
