@@ -1,0 +1,101 @@
+{
+  "name": "TopoMar Icon Generator",
+  "description": "Instrucciones para generar todos los iconos necesarios desde tu logo",
+  "steps": [
+    {
+      "step": 1,
+      "title": "Añade tu logo",
+      "description": "Coloca tu logo en assets/images/logo.png",
+      "size": "512x512px o mayor",
+      "format": "PNG con transparencia"
+    },
+    {
+      "step": 2,
+      "title": "Opción A: Usar script automático",
+      "commands": [
+        "# Instalar ImageMagick (si no lo tienes)",
+        "choco install imagemagick",
+        "",
+        "# Ejecutar el script",
+        ".\\scripts\\generate-icons.ps1"
+      ]
+    },
+    {
+      "step": 3,
+      "title": "Opción B: Usar herramienta online",
+      "tools": [
+        {
+          "name": "Favicon Generator",
+          "url": "https://www.favicon-generator.org/",
+          "description": "Sube tu logo y descarga todos los tamaños"
+        },
+        {
+          "name": "App Icon Generator",
+          "url": "https://appicon.co/",
+          "description": "Genera iconos para iOS y Android"
+        },
+        {
+          "name": "Figma Export",
+          "description": "Exporta directamente desde Figma en múltiples tamaños"
+        }
+      ]
+    },
+    {
+      "step": 4,
+      "title": "Opción C: Desde Figma",
+      "instructions": [
+        "1. Selecciona tu logo en Figma",
+        "2. Panel derecho > Export",
+        "3. Añade estas configuraciones:",
+        "   - 1024w → icon.png",
+        "   - 2048w → splash.png",
+        "   - 200w → splash-icon.png",
+        "   - 48w → favicon.png",
+        "4. Export All",
+        "5. Copia los archivos a assets/images/"
+      ]
+    }
+  ],
+  "requiredFiles": [
+    {
+      "file": "icon.png",
+      "size": "1024x1024",
+      "usage": "Ícono principal de la app"
+    },
+    {
+      "file": "splash.png",
+      "size": "2048x2048",
+      "usage": "Imagen grande para splash screen"
+    },
+    {
+      "file": "splash-icon.png",
+      "size": "200x200",
+      "usage": "Logo en splash screen"
+    },
+    {
+      "file": "favicon.png",
+      "size": "48x48",
+      "usage": "Favicon para versión web"
+    },
+    {
+      "file": "android-icon-foreground.png",
+      "size": "1024x1024",
+      "usage": "Ícono adaptativo Android (foreground)"
+    },
+    {
+      "file": "android-icon-background.png",
+      "size": "1024x1024",
+      "usage": "Ícono adaptativo Android (background)"
+    },
+    {
+      "file": "android-icon-monochrome.png",
+      "size": "1024x1024",
+      "usage": "Ícono monocromático Android"
+    }
+  ],
+  "afterGeneration": [
+    "1. Actualiza src/components/Logo/Logo.tsx (descomenta las líneas del logo)",
+    "2. Reinicia la app: npm start -- --clear",
+    "3. Verifica que el logo aparezca correctamente"
+  ]
+}

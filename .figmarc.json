@@ -1,0 +1,23 @@
+{
+  "figma": {
+    "fileUrl": "TU_URL_DE_FIGMA_AQUI",
+    "personalAccessToken": "TU_TOKEN_AQUI",
+    "teamId": "TU_TEAM_ID_AQUI"
+  },
+  "export": {
+    "outputDirectory": "./src/components",
+    "componentFormat": "typescript",
+    "styleFormat": "stylesheet",
+    "includeTypes": true
+  },
+  "naming": {
+    "componentPrefix": "",
+    "componentSuffix": "",
+    "useHyphens": false,
+    "useCamelCase": true
+  },
+  "theme": {
+    "tokensFile": "./src/style/theme.ts",
+    "useDesignTokens": true
+  }
+}

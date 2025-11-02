@@ -1,8 +1,8 @@
-import geoJsonData from "@/src/assets/geodata/IMT_EntitesRemarquables.json";
-import { useDevicePitch, useOrientation } from "@/src/hooks/useDeviceOrietation";
-import { useLocation } from "@/src/hooks/useLocation";
-import { Coordinates } from "@/src/types/locationTypes";
-import { calculateBearing, calculateDistance } from "@/src/utils/calcLocation";
+import geoJsonData from "@/assets/geodata/IMT_EntitesRemarquables.json";
+import { useDevicePitch, useOrientation } from "@/hooks/useDeviceOrietation";
+import { useLocation } from "@/hooks/useLocation";
+import { Coordinates } from "@/types/locationTypes";
+import { calculateBearing, calculateDistance } from "@/utils/calcLocation";
 import { CameraView } from "expo-camera";
 import { useMemo } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";

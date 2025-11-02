@@ -1,4 +1,4 @@
-import geojson from "@/src/assets/geodata/4G6NZVR0_Height_Toponymes.json";
+import geojson from "@/assets/geodata/4G6NZVR0_Height_Toponymes.json";
 import * as Location from 'expo-location';
 import { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";

@@ -1,57 +1,93 @@
-import { Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { Dimensions, Image, ImageBackground, StyleSheet, TouchableOpacity, View } from "react-native";
+
+const { width, height } = Dimensions.get('window');
 
 export default function Index() {
+  const router = useRouter();
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>HOME PAGE</Text>
+    <ImageBackground
+      source={require('../../assets/images/HOME_SCREEN.png')} // Fondo del mar KERREGVIEW
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.container}>
+        <View style={styles.buttonContainer}>
+          {/* Botón MAPAS (superior) - Icono de ubicación */}
+          <TouchableOpacity 
+            style={styles.ellipseButton}
+            onPress={() => router.push("/maps")}
+            activeOpacity={0.7}
+          >
+            <Image 
+              source={require('../../assets/images/Map pin.png')}
+              style={styles.icon}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
 
-      <View style={styles.links}>
-        <Link href={"/camera"} style={styles.link}>
-          <Text style={styles.linkText}>CAMERA</Text>
-        </Link>
+          {/* Botón CÁMARA (centro) */}
+          <TouchableOpacity 
+            style={styles.ellipseButton}
+            onPress={() => router.push("/camera")}
+            activeOpacity={0.7}
+          >
+            <Image 
+              source={require('../../assets/images/Camera.png')}
+              style={styles.icon}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
 
-        <Link href={"/maps"} style={styles.link}>
-          <Text style={styles.linkText}>MAPS</Text>
-        </Link>
-
-        <Link href={"/level"} style={styles.link}>
-          <Text style={styles.linkText}>WATER LEVEL</Text>
-        </Link>
+          {/* Botón NIVEL DEL AGUA (inferior) - Icono de olas */}
+          <TouchableOpacity 
+            style={styles.ellipseButton}
+            onPress={() => router.push("/level")}
+            activeOpacity={0.7}
+          >
+            <Image 
+              source={require('../../assets/images/Vector.png')}
+              style={styles.icon}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    width: width,
+    height: height,
+  },
   container: {
     flex: 1,
-    padding: 24,
-    backgroundColor: "#f7f7f7",
-    alignItems: "center",
-    justifyContent: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  title: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#1f2937",
-    marginBottom: 20,
+  buttonContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 48, // Espaciado entre botones (ajustado según diseño)
   },
-  links: {
-    width: "100%",
-    maxWidth: 420,
+  ellipseButton: {
+    // Dimensiones exactas del diseño KERREGVIEW
+    width: 252,
+    height: 114,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)', // Fondo muy sutil semi-transparente
+    borderRadius: 57, // Para crear la elipse perfecta (114/2)
+    borderWidth: 2.5, // Borde visible de la elipse
+    borderColor: 'rgba(255, 255, 255, 0.9)', // Borde blanco más opaco
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  link: {
-    backgroundColor: "#0a84ff",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-    marginVertical: 8,
-    alignItems: "center",
-  },
-  linkText: {
-    color: "#ffffff",
-    fontWeight: "600",
-    fontSize: 16,
+  icon: {
+    width: 72,
+    height: 72,
+    opacity: 1, // Asegurar que el icono sea completamente visible
   },
 });

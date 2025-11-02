@@ -1,4 +1,4 @@
-import geojson from "@/src/assets/geodata/4G6NZVR0_Height_Toponymes.json";
+import geojson from "@/assets/geodata/4G6NZVR0_Height_Toponymes.json";
 import React, { useCallback, useEffect, useState } from "react";
 import {
     Alert,
@@ -10,7 +10,7 @@ import {
     View,
 } from "react-native";
 // Import FileSystem from Expo
-import { Feature } from "@/src/types/locationTypes";
+import { Feature } from "@/types/locationTypes";
 import * as FileSystem from "expo-file-system/legacy";
 
 
