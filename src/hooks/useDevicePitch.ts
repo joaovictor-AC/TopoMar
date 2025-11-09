@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 // 0° = celular deitado com a tela para cima.
 // Valores abaixo de 90° significam que está apontado para baixo.
 export const useDevicePitch = () => {
-  const [pitch, setPitch] = useState(90);
+  const [pitch, setPitch] = useState(0);
 
   useEffect(() => {
     // Pede permissão para usar os sensores de movimento
@@ -21,9 +21,11 @@ export const useDevicePitch = () => {
         // Converte de radianos para graus
         const betaDeg = betaRad * (180 / Math.PI);
         
-        // O valor de beta quando o celular está na vertical é 90.
-        // Nós ajustamos para que o nosso 'pitch' reflita isso.
-        setPitch(betaDeg);
+        // ➋ recentrage : 90° (portrait-horizon) → 0°, vers le bas → négatif, vers le haut → positif
+        const pitchCentered = 90 - betaDeg;
+        // ➌ (optionnel) borne pour rester propre
+        const bounded = Math.max(-90, Math.min(90, pitchCentered));
+        setPitch(bounded);
       }
     });
 
