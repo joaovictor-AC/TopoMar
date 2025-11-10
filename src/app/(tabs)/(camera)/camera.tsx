@@ -123,7 +123,7 @@ export default function CameraScreen() {
                 <View style={styles.overlay}>
                     {location ? (
                         <>
-                            <Text style={styles.text}>Sua localização atual:</Text>
+                            <Text style={styles.text}>Your current location:</Text>
                             <Text style={styles.coordsText}>
                                 Latitude: {location.coords.latitude.toFixed(5)}
                             </Text>
@@ -148,7 +148,7 @@ export default function CameraScreen() {
                         </>
                     ) : (
                         <Text style={styles.text}>
-                            {errorMsg || 'Aguardando localização...'}
+                            {errorMsg || 'Waiting for location...'}
                         </Text>
                     )}
                 </View>

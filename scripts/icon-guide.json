@@ -1,58 +1,58 @@
 {
   "name": "TopoMar Icon Generator",
-  "description": "Instrucciones para generar todos los iconos necesarios desde tu logo",
+  "description": "Instructions to generate all necessary icons from your logo",
   "steps": [
     {
       "step": 1,
-      "title": "Añade tu logo",
-      "description": "Coloca tu logo en assets/images/logo.png",
-      "size": "512x512px o mayor",
-      "format": "PNG con transparencia"
+      "title": "Add your logo",
+      "description": "Place your logo in assets/images/logo.png",
+      "size": "512x512px or larger",
+      "format": "PNG with transparency"
     },
     {
       "step": 2,
-      "title": "Opción A: Usar script automático",
+      "title": "Option A: Use automatic script",
       "commands": [
-        "# Instalar ImageMagick (si no lo tienes)",
+        "# Install ImageMagick (if you don't have it)",
         "choco install imagemagick",
         "",
-        "# Ejecutar el script",
+        "# Run the script",
         ".\\scripts\\generate-icons.ps1"
       ]
     },
     {
       "step": 3,
-      "title": "Opción B: Usar herramienta online",
+      "title": "Option B: Use online tool",
       "tools": [
         {
           "name": "Favicon Generator",
           "url": "https://www.favicon-generator.org/",
-          "description": "Sube tu logo y descarga todos los tamaños"
+          "description": "Upload your logo and download all sizes"
         },
         {
           "name": "App Icon Generator",
           "url": "https://appicon.co/",
-          "description": "Genera iconos para iOS y Android"
+          "description": "Generate icons for iOS and Android"
         },
         {
           "name": "Figma Export",
-          "description": "Exporta directamente desde Figma en múltiples tamaños"
+          "description": "Export directly from Figma in multiple sizes"
         }
       ]
     },
     {
       "step": 4,
-      "title": "Opción C: Desde Figma",
+      "title": "Option C: From Figma",
       "instructions": [
-        "1. Selecciona tu logo en Figma",
-        "2. Panel derecho > Export",
-        "3. Añade estas configuraciones:",
+        "1. Select your logo in Figma",
+        "2. Right panel > Export",
+        "3. Add these configurations:",
         "   - 1024w → icon.png",
         "   - 2048w → splash.png",
         "   - 200w → splash-icon.png",
         "   - 48w → favicon.png",
         "4. Export All",
-        "5. Copia los archivos a assets/images/"
+        "5. Copy files to assets/images/"
       ]
     }
   ],
@@ -60,42 +60,42 @@
     {
       "file": "icon.png",
       "size": "1024x1024",
-      "usage": "Ícono principal de la app"
+      "usage": "Main app icon"
     },
     {
       "file": "splash.png",
       "size": "2048x2048",
-      "usage": "Imagen grande para splash screen"
+      "usage": "Large image for splash screen"
     },
     {
       "file": "splash-icon.png",
       "size": "200x200",
-      "usage": "Logo en splash screen"
+      "usage": "Logo on splash screen"
     },
     {
       "file": "favicon.png",
       "size": "48x48",
-      "usage": "Favicon para versión web"
+      "usage": "Favicon for web version"
     },
     {
       "file": "android-icon-foreground.png",
       "size": "1024x1024",
-      "usage": "Ícono adaptativo Android (foreground)"
+      "usage": "Android adaptive icon (foreground)"
     },
     {
       "file": "android-icon-background.png",
       "size": "1024x1024",
-      "usage": "Ícono adaptativo Android (background)"
+      "usage": "Android adaptive icon (background)"
     },
     {
       "file": "android-icon-monochrome.png",
       "size": "1024x1024",
-      "usage": "Ícono monocromático Android"
+      "usage": "Android monochrome icon"
     }
   ],
   "afterGeneration": [
-    "1. Actualiza src/components/Logo/Logo.tsx (descomenta las líneas del logo)",
-    "2. Reinicia la app: npm start -- --clear",
-    "3. Verifica que el logo aparezca correctamente"
+    "1. Update src/components/Logo/Logo.tsx (uncomment logo lines)",
+    "2. Restart the app: npm start -- --clear",
+    "3. Verify the logo appears correctly"
   ]
 }

@@ -1,6 +1,6 @@
 /**
- * Ejemplo de Integración con Figma
- * Este archivo muestra cómo usar los componentes exportados desde Figma
+ * Figma Integration Example
+ * This file shows how to use components exported from Figma
  */
 
 import { Button, Card, Input } from '@/components';
@@ -15,30 +15,30 @@ export default function FigmaExampleScreen() {
 
   const handleSubmit = () => {
     if (!name || !email) {
-      setError('Por favor completa todos los campos');
+      setError('Please complete all fields');
       return;
     }
-    console.log('Formulario enviado:', { name, email });
+    console.log('Form submitted:', { name, email });
     setError('');
   };
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>
-        {/* Sección de Header */}
+        {/* Header Section */}
         <Card style={styles.headerCard} elevation="xl">
-          <Text style={styles.mainTitle}>Ejemplo de Integración</Text>
+          <Text style={styles.mainTitle}>Integration Example</Text>
           <Text style={styles.subtitle}>
-            Componentes exportados desde Figma
+            Components exported from Figma
           </Text>
         </Card>
 
-        {/* Sección de Botones */}
+        {/* Buttons Section */}
         <Card style={styles.section}>
-          <Text style={styles.sectionTitle}>Variantes de Botones</Text>
+          <Text style={styles.sectionTitle}>Button Variants</Text>
           
           <Button
-            title="Botón Primario"
+            title="Primary Button"
             onPress={() => console.log('Primary')}
             variant="primary"
             size="lg"
@@ -46,7 +46,7 @@ export default function FigmaExampleScreen() {
           />
 
           <Button
-            title="Botón Secundario"
+            title="Secondary Button"
             onPress={() => console.log('Secondary')}
             variant="secondary"
             size="md"
@@ -55,7 +55,7 @@ export default function FigmaExampleScreen() {
           />
 
           <Button
-            title="Botón con Borde"
+            title="Outline Button"
             onPress={() => console.log('Outline')}
             variant="outline"
             size="md"
@@ -64,7 +64,7 @@ export default function FigmaExampleScreen() {
           />
 
           <Button
-            title="Botón Texto"
+            title="Text Button"
             onPress={() => console.log('Text')}
             variant="text"
             size="sm"
@@ -73,7 +73,7 @@ export default function FigmaExampleScreen() {
           />
 
           <Button
-            title="Botón Deshabilitado"
+            title="Disabled Button"
             onPress={() => {}}
             variant="primary"
             size="md"
@@ -83,7 +83,7 @@ export default function FigmaExampleScreen() {
           />
 
           <Button
-            title="Cargando..."
+            title="Loading..."
             onPress={() => {}}
             variant="primary"
             size="md"
@@ -93,21 +93,21 @@ export default function FigmaExampleScreen() {
           />
         </Card>
 
-        {/* Sección de Formulario */}
+        {/* Form Section */}
         <Card style={styles.section}>
-          <Text style={styles.sectionTitle}>Formulario de Ejemplo</Text>
+          <Text style={styles.sectionTitle}>Example Form</Text>
           
           <Input
-            label="Nombre"
-            placeholder="Ingresa tu nombre"
+            label="Name"
+            placeholder="Enter your name"
             value={name}
             onChangeText={setName}
-            helperText="Requerido"
+            helperText="Required"
           />
 
           <Input
             label="Email"
-            placeholder="correo@ejemplo.com"
+            placeholder="email@example.com"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -116,7 +116,7 @@ export default function FigmaExampleScreen() {
           />
 
           <Button
-            title="Enviar"
+            title="Submit"
             onPress={handleSubmit}
             variant="primary"
             size="lg"
@@ -124,30 +124,30 @@ export default function FigmaExampleScreen() {
           />
         </Card>
 
-        {/* Sección de Cards */}
+        {/* Cards Section */}
         <Card style={styles.section}>
-          <Text style={styles.sectionTitle}>Elevaciones de Cards</Text>
+          <Text style={styles.sectionTitle}>Card Elevations</Text>
           
           <Card elevation="sm" style={styles.nestedCard}>
-            <Text style={styles.cardText}>Card con sombra pequeña (sm)</Text>
+            <Text style={styles.cardText}>Card with small shadow (sm)</Text>
           </Card>
 
           <Card elevation="md" style={styles.nestedCard}>
-            <Text style={styles.cardText}>Card con sombra media (md)</Text>
+            <Text style={styles.cardText}>Card with medium shadow (md)</Text>
           </Card>
 
           <Card elevation="lg" style={styles.nestedCard}>
-            <Text style={styles.cardText}>Card con sombra grande (lg)</Text>
+            <Text style={styles.cardText}>Card with large shadow (lg)</Text>
           </Card>
 
           <Card elevation="xl" style={styles.nestedCard}>
-            <Text style={styles.cardText}>Card con sombra extra grande (xl)</Text>
+            <Text style={styles.cardText}>Card with extra large shadow (xl)</Text>
           </Card>
         </Card>
 
-        {/* Sección de Colores del Theme */}
+        {/* Theme Colors Section */}
         <Card style={styles.section}>
-          <Text style={styles.sectionTitle}>Colores del Theme</Text>
+          <Text style={styles.sectionTitle}>Theme Colors</Text>
           
           <View style={styles.colorGrid}>
             <View style={[styles.colorBox, { backgroundColor: theme.colors.primary.main }]}>

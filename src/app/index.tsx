@@ -8,13 +8,13 @@ export default function Index() {
 
   return (
     <ImageBackground
-      source={require('../../assets/images/HOME_SCREEN.png')} // Fondo del mar KERREGVIEW
+      source={require('../../assets/images/HOME_SCREEN.png')} // KERREGVIEW ocean background
       style={styles.background}
       resizeMode="cover"
     >
       <View style={styles.container}>
         <View style={styles.buttonContainer}>
-          {/* Botón MAPAS (superior) - Icono de ubicación */}
+          {/* MAPS Button (top) - Location pin icon */}
           <TouchableOpacity 
             style={styles.ellipseButton}
             onPress={() => router.push("/maps")}
@@ -27,7 +27,7 @@ export default function Index() {
             />
           </TouchableOpacity>
 
-          {/* Botón CÁMARA (centro) */}
+          {/* CAMERA Button (center) */}
           <TouchableOpacity 
             style={styles.ellipseButton}
             onPress={() => router.push("/camera")}
@@ -40,7 +40,7 @@ export default function Index() {
             />
           </TouchableOpacity>
 
-          {/* Botón NIVEL DEL AGUA (inferior) - Icono de olas */}
+          {/* WATER LEVEL Button (bottom) - Waves icon */}
           <TouchableOpacity 
             style={styles.ellipseButton}
             onPress={() => router.push("/level")}
@@ -72,22 +72,22 @@ const styles = StyleSheet.create({
   buttonContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 48, // Espaciado entre botones (ajustado según diseño)
+    gap: 48, // Spacing between buttons (adjusted to design)
   },
   ellipseButton: {
-    // Dimensiones exactas del diseño KERREGVIEW
+    // Exact dimensions from KERREGVIEW design
     width: 252,
     height: 114,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)', // Fondo muy sutil semi-transparente
-    borderRadius: 57, // Para crear la elipse perfecta (114/2)
-    borderWidth: 2.5, // Borde visible de la elipse
-    borderColor: 'rgba(255, 255, 255, 0.9)', // Borde blanco más opaco
+    backgroundColor: 'rgba(255, 255, 255, 0.15)', // Very subtle semi-transparent background
+    borderRadius: 57, // To create perfect ellipse (114/2)
+    borderWidth: 2.5, // Visible ellipse border
+    borderColor: 'rgba(255, 255, 255, 0.9)', // More opaque white border
     justifyContent: 'center',
     alignItems: 'center',
   },
   icon: {
     width: 72,
     height: 72,
-    opacity: 1, // Asegurar que el icono sea completamente visible
+    opacity: 1, // Ensure icon is fully visible
   },
 });

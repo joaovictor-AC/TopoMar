@@ -1,4 +1,6 @@
 import geojson from "@/assets/geodata/4G6NZVR0_Height_Toponymes.json";
+import { Feature } from "@/types/locationTypes";
+import * as FileSystem from "expo-file-system/legacy";
 import React, { useCallback, useEffect, useState } from "react";
 import {
     Alert,
@@ -9,10 +11,6 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-// Import FileSystem from Expo
-import { Feature } from "@/types/locationTypes";
-import * as FileSystem from "expo-file-system/legacy";
-
 
 // Define a file URI in the app's persistent document directory
 const FILE_URI = FileSystem.documentDirectory + "myGeoData.json";
@@ -26,6 +24,9 @@ export default function WaterLevelScreen() {
         initial.map((f) => ({ ...f }))
     );
     const [isLoading, setIsLoading] = useState(true);
+    
+    // State for sea level height (HE - Hauteur de la mer)
+    const [seaLevel, setSeaLevel] = useState<string>("0");
 
     // Load saved data when the component mounts
     useEffect(() => {
@@ -40,11 +41,15 @@ export default function WaterLevelScreen() {
                     if (savedData.features) {
                         setFeatures(savedData.features as Feature[]);
                     }
+                    // Load saved sea level if exists
+                    if (savedData.seaLevel !== undefined) {
+                        setSeaLevel(String(savedData.seaLevel));
+                    }
                 }
                 // If the file doesn't exist, state remains 'initial'
             } catch (e) {
                 console.error("Failed to load data from file system", e);
-                Alert.alert("Erreur", "Impossible de charger les données sauvegardées.");
+                Alert.alert("Error", "Unable to load saved data.");
             } finally {
                 setIsLoading(false); // Done loading
             }
@@ -53,55 +58,67 @@ export default function WaterLevelScreen() {
         loadData();
     }, [initial]); // 'initial' is stable, so this runs once on mount
 
-    const updateHeight = useCallback((index: number, value: string) => {
-        setFeatures((cur) => {
-            const next = cur.slice();
-            next[index] = {
-                ...next[index],
-                properties: {
-                    ...next[index].properties,
-                    hauteurAuDessusNiveauMer: value,
-                },
-            };
-            return next;
-        });
-    }, []);
+    /**
+     * Calculate visibility of rock based on sea level
+     * Formula: visibility = Alt1 - HE
+     * If visibility < 0, rock is submerged (not visible)
+     * If visibility >= 0, rock is visible
+     */
+    const calculateVisibility = (alt1: number | null | undefined, seaLevelValue: number): { 
+        isVisible: boolean; 
+        visibilityHeight: number | null;
+    } => {
+        if (alt1 === null || alt1 === undefined || isNaN(alt1)) {
+            return { isVisible: false, visibilityHeight: null };
+        }
+        
+        const visibilityHeight = alt1 - seaLevelValue;
+        return {
+            isVisible: visibilityHeight >= 0,
+            visibilityHeight: visibilityHeight
+        };
+    };
 
     // Function to save data to the file
     const saveAndExport = useCallback(async () => {
-        const out = { ...(geojson as any), features };
+        const out = { 
+            ...(geojson as any), 
+            features,
+            seaLevel: parseFloat(seaLevel) || 0
+        };
         try {
             // Stringify the updated GeoJSON structure
             const jsonValue = JSON.stringify(out);
             // Write the string to the file
             await FileSystem.writeAsStringAsync(FILE_URI, jsonValue);
-            Alert.alert("Sauvegardé", "Les modifications ont été écrites dans le fichier.");
+            Alert.alert("Saved", "Changes have been written to the file.");
             console.log("Updated geojson saved to file:", FILE_URI);
         } catch (e) {
             console.error("Failed to save data", e);
-            Alert.alert("Erreur", "Impossible de sauvegarder les modifications.");
+            Alert.alert("Error", "Unable to save changes.");
         }
-    }, [features]);
+    }, [features, seaLevel]);
 
     // Function to reset data to default
     const resetData = useCallback(async () => {
         Alert.alert(
-            "Réinitialiser",
-            "Voulez-vous vraiment effacer le fichier sauvegardé et revenir aux données par défaut ?",
+            "Reset",
+            "Do you really want to delete the saved file and revert to default data?",
             [
-                { text: "Annuler", style: "cancel" },
+                { text: "Cancel", style: "cancel" },
                 {
-                    text: "Réinitialiser",
+                    text: "Reset",
                     style: "destructive",
                     onPress: async () => {
                         try {
                             // Delete the file and reset state
                             await FileSystem.deleteAsync(FILE_URI, { idempotent: true });
                             setFeatures(initial.map((f) => ({ ...f })));
-                            Alert.alert("Réinitialisé", "Les données ont été réinitialisées.");
+                            setSeaLevel("0");
+                            Alert.alert("Reset", "Data has been reset.");
                         } catch (e) {
                             console.error("Failed to reset data", e);
-                            Alert.alert("Erreur", "Impossible de réinitialiser les données.");
+                            Alert.alert("Error", "Unable to reset data.");
                         }
                     },
                 },
@@ -113,87 +130,254 @@ export default function WaterLevelScreen() {
     if (isLoading) {
         return (
             <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
-                <Text>Chargement des données...</Text>
+                <Text>Loading data...</Text>
             </View>
         );
     }
 
+    const seaLevelValue = parseFloat(seaLevel) || 0;
+
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Water level — éditer hauteur (m)</Text>
+            <Text style={styles.title}>Water Level Calculator</Text>
+            
+            {/* Sea Level Input (HE) */}
+            <View style={styles.seaLevelCard}>
+                <Text style={styles.seaLevelLabel}>Sea Level Height (HE) in meters:</Text>
+                <TextInput
+                    style={styles.seaLevelInput}
+                    value={seaLevel}
+                    keyboardType="numeric"
+                    onChangeText={setSeaLevel}
+                    placeholder="Enter sea level (e.g., 4.5)"
+                />
+                <Text style={styles.helperText}>
+                    Current sea level: {seaLevelValue.toFixed(2)} m
+                </Text>
+            </View>
 
             <FlatList
                 data={features}
                 keyExtractor={(_, i) => String(i)}
                 renderItem={({ item, index }) => {
                     const name = item.properties?.nom ?? `#${index + 1}`;
-                    const height = item.properties?.hauteurAuDessusNiveauMer ?? "";
+                    const alt1 = item.properties?.alt1;
+                    const alt2 = item.properties?.alt2;
+                    
+                    // Calculate visibility
+                    const { isVisible, visibilityHeight } = calculateVisibility(alt1, seaLevelValue);
+                    
                     return (
-                        <View style={styles.card}>
+                        <View style={[
+                            styles.card,
+                            !isVisible && styles.cardSubmerged
+                        ]}>
                             <View style={styles.row}>
                                 <Text style={styles.name}>{name}</Text>
-                                <Text style={styles.type}>
-                                    {item.properties?.featureType ?? ""}
+                                <View style={[
+                                    styles.visibilityBadge,
+                                    isVisible ? styles.badgeVisible : styles.badgeSubmerged
+                                ]}>
+                                    <Text style={styles.badgeText}>
+                                        {isVisible ? "VISIBLE" : "SUBMERGED"}
+                                    </Text>
+                                </View>
+                            </View>
+
+                            <View style={styles.dataRow}>
+                                <Text style={styles.label}>Alt1 (reference):</Text>
+                                <Text style={styles.value}>
+                                    {alt1 !== null && alt1 !== undefined ? `${alt1} m` : "N/A"}
                                 </Text>
                             </View>
 
-                            <View style={[styles.row, { marginTop: 8 }]}>
-                                <TextInput
-                                    style={styles.input}
-                                    value={String(height)}
-                                    keyboardType="numeric"
-                                    onChangeText={(text) =>
-                                        updateHeight(index, text)
+                            {alt2 !== null && alt2 !== undefined && (
+                                <View style={styles.dataRow}>
+                                    <Text style={styles.label}>Alt2:</Text>
+                                    <Text style={styles.value}>{alt2} m</Text>
+                                </View>
+                            )}
+
+                            <View style={styles.dataRow}>
+                                <Text style={styles.label}>Sea Level (HE):</Text>
+                                <Text style={styles.value}>{seaLevelValue.toFixed(2)} m</Text>
+                            </View>
+
+                            {visibilityHeight !== null && (
+                                <View style={styles.dataRow}>
+                                    <Text style={[styles.label, styles.labelBold]}>
+                                        Visibility (Alt1 - HE):
+                                    </Text>
+                                    <Text style={[
+                                        styles.value,
+                                        styles.valueBold,
+                                        visibilityHeight < 0 ? styles.valueNegative : styles.valuePositive
+                                    ]}>
+                                        {visibilityHeight.toFixed(2)} m
+                                    </Text>
+                                </View>
+                            )}
+
+                            <View style={styles.infoBox}>
+                                <Text style={styles.infoText}>
+                                    {isVisible 
+                                        ? `✓ Rock is ${visibilityHeight?.toFixed(2)}m above water`
+                                        : `✗ Rock is ${Math.abs(visibilityHeight || 0).toFixed(2)}m below water`
                                     }
-                                    placeholder="hauteurAuDessusNiveauMer"
-                                />
+                                </Text>
                             </View>
                         </View>
                     );
                 }}
-                ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+                ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
                 contentContainerStyle={{ paddingBottom: 32 }}
             />
 
             <View style={styles.footer}>
                 <TouchableOpacity style={styles.action} onPress={saveAndExport}>
-                    <Text style={styles.actionText}>Save to File</Text>
+                    <Text style={styles.actionText}>Save Data</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[styles.action, styles.actionReset]}
                     onPress={resetData}
                 >
-                    <Text style={styles.actionText}>Reset to Default</Text>
+                    <Text style={styles.actionText}>Reset</Text>
                 </TouchableOpacity>
             </View>
         </View>
     );
 }
 
-// Styles remain exactly the same as the previous version
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 16, backgroundColor: "#f7f7f7" },
-    title: { fontSize: 18, fontWeight: "600", marginBottom: 12 },
+    container: { 
+        flex: 1, 
+        padding: 16, 
+        backgroundColor: "#f7f7f7" 
+    },
+    title: { 
+        fontSize: 22, 
+        fontWeight: "700", 
+        marginBottom: 16,
+        color: "#1a1a1a"
+    },
+    seaLevelCard: {
+        backgroundColor: "#e3f2fd",
+        padding: 16,
+        borderRadius: 12,
+        marginBottom: 16,
+        borderWidth: 2,
+        borderColor: "#2196f3",
+    },
+    seaLevelLabel: {
+        fontSize: 16,
+        fontWeight: "600",
+        color: "#1565c0",
+        marginBottom: 8,
+    },
+    seaLevelInput: {
+        backgroundColor: "#fff",
+        borderWidth: 2,
+        borderColor: "#2196f3",
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        borderRadius: 8,
+        fontSize: 18,
+        fontWeight: "600",
+        color: "#1565c0",
+    },
+    helperText: {
+        marginTop: 8,
+        fontSize: 14,
+        color: "#1565c0",
+        fontStyle: "italic",
+    },
     card: {
         backgroundColor: "#fff",
-        padding: 12,
-        borderRadius: 8,
+        padding: 16,
+        borderRadius: 12,
         shadowColor: "#000",
-        shadowOpacity: 0.06,
-        shadowRadius: 6,
-        elevation: 2,
-    },
-    row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-    name: { fontSize: 16, fontWeight: "600", flex: 1 },
-    type: { fontSize: 12, color: "#666", marginLeft: 8 },
-    input: {
-        flex: 1,
+        shadowOpacity: 0.08,
+        shadowRadius: 8,
+        elevation: 3,
         borderWidth: 1,
         borderColor: "#e0e0e0",
-        paddingHorizontal: 8,
+    },
+    cardSubmerged: {
+        backgroundColor: "#ffebee",
+        borderColor: "#ef5350",
+        borderWidth: 2,
+    },
+    row: { 
+        flexDirection: "row", 
+        alignItems: "center", 
+        justifyContent: "space-between",
+        marginBottom: 12,
+    },
+    name: { 
+        fontSize: 18, 
+        fontWeight: "700", 
+        flex: 1,
+        color: "#1a1a1a",
+    },
+    visibilityBadge: {
+        paddingHorizontal: 12,
         paddingVertical: 6,
-        borderRadius: 6,
-        backgroundColor: "#fafafa",
+        borderRadius: 20,
+        marginLeft: 8,
+    },
+    badgeVisible: {
+        backgroundColor: "#4caf50",
+    },
+    badgeSubmerged: {
+        backgroundColor: "#f44336",
+    },
+    badgeText: {
+        color: "#fff",
+        fontWeight: "700",
+        fontSize: 12,
+    },
+    dataRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 8,
+    },
+    label: {
+        fontSize: 14,
+        color: "#666",
+    },
+    labelBold: {
+        fontWeight: "700",
+        color: "#1a1a1a",
+        fontSize: 15,
+    },
+    value: {
+        fontSize: 14,
+        fontWeight: "600",
+        color: "#333",
+    },
+    valueBold: {
+        fontSize: 16,
+        fontWeight: "700",
+    },
+    valuePositive: {
+        color: "#4caf50",
+    },
+    valueNegative: {
+        color: "#f44336",
+    },
+    infoBox: {
+        marginTop: 12,
+        padding: 12,
+        backgroundColor: "#f5f5f5",
+        borderRadius: 8,
+        borderLeftWidth: 4,
+        borderLeftColor: "#2196f3",
+    },
+    infoText: {
+        fontSize: 14,
+        color: "#333",
+        fontWeight: "500",
     },
     footer: {
         marginTop: 12,
@@ -201,16 +385,24 @@ const styles = StyleSheet.create({
         justifyContent: "space-around",
     },
     action: {
-        backgroundColor: "#2d2d2d",
-        paddingHorizontal: 16,
-        paddingVertical: 10,
-        borderRadius: 8,
+        backgroundColor: "#2196f3",
+        paddingHorizontal: 20,
+        paddingVertical: 14,
+        borderRadius: 10,
         flex: 1,
-        marginHorizontal: 4,
+        marginHorizontal: 6,
         alignItems: "center",
+        shadowColor: "#000",
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 4,
     },
     actionReset: {
-        backgroundColor: "#c0392b",
+        backgroundColor: "#f44336",
     },
-    actionText: { color: "#fff", fontWeight: "600" },
+    actionText: { 
+        color: "#fff", 
+        fontWeight: "700",
+        fontSize: 16,
+    },
 });

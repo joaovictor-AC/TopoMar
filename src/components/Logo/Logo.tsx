@@ -1,15 +1,15 @@
 /**
  * Logo Component
- * Componente reutilizable para mostrar el logo de TopoMar
+ * Reusable component to display the TopoMar logo
  */
 
 import React from 'react';
 import { Image, ImageSourcePropType, ImageStyle, StyleProp } from 'react-native';
 
-// Tu logo personalizado
+// Your custom logo
 const logoDefault = require('../../../assets/images/logo.png');
 
-// Si más adelante añades una versión en blanco, descomenta:
+// If you later add a white version, uncomment:
 // const logoWhite = require('../../../assets/images/logo-white.png');
 
 interface LogoProps {
@@ -25,10 +25,10 @@ export const Logo: React.FC<LogoProps> = ({
   style,
   source
 }) => {
-  // Usa tu logo por defecto, o uno personalizado si se pasa por props
+  // Use your default logo, or a custom one if passed via props
   const logoSource = source || logoDefault;
   
-  // Si añades logo-white.png, puedes habilitar esto:
+  // If you add logo-white.png, you can enable this:
   // const logoSource = source || (variant === 'white' ? logoWhite : logoDefault);
 
   return (
