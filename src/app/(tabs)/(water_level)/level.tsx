@@ -4,7 +4,7 @@ import * as FileSystem from "expo-file-system/legacy";
 import React, { useCallback, useEffect, useState } from "react";
 import {
     Alert,
-    FlatList,
+    ScrollView,
     StyleSheet,
     Text,
     TextInput,
@@ -26,7 +26,13 @@ export default function WaterLevelScreen() {
     const [isLoading, setIsLoading] = useState(true);
     
     // State for sea level height (HE - Hauteur de la mer)
-    const [seaLevel, setSeaLevel] = useState<string>("0");
+    const [seaLevel, setSeaLevel] = useState<string>("4.5");
+    
+    // State for filtering rocks by visibility
+    const [filter, setFilter] = useState<'all' | 'visible' | 'submerged'>('all');
+    
+    // State for search query
+    const [searchQuery, setSearchQuery] = useState<string>("");
 
     // Load saved data when the component mounts
     useEffect(() => {
@@ -63,6 +69,9 @@ export default function WaterLevelScreen() {
      * Formula: visibility = Alt1 - HE
      * If visibility < 0, rock is submerged (not visible)
      * If visibility >= 0, rock is visible
+     * 
+     * @param alt1 - Height above sea level (hauteurAuDessusNiveauMer)
+     * @param seaLevelValue - Current sea level height (HE)
      */
     const calculateVisibility = (alt1: number | null | undefined, seaLevelValue: number): { 
         isVisible: boolean; 
@@ -84,7 +93,7 @@ export default function WaterLevelScreen() {
         const out = { 
             ...(geojson as any), 
             features,
-            seaLevel: parseFloat(seaLevel) || 0
+            seaLevel: parseFloat(seaLevel.replace(',', '.')) || 0
         };
         try {
             // Stringify the updated GeoJSON structure
@@ -135,43 +144,156 @@ export default function WaterLevelScreen() {
         );
     }
 
-    const seaLevelValue = parseFloat(seaLevel) || 0;
+    // Convert comma to point for decimal parsing (e.g., "4,5" -> "4.5")
+    const seaLevelValue = parseFloat(seaLevel.replace(',', '.')) || 0;
+
+    // Calculate statistics
+    const stats = features.reduce((acc, feature) => {
+        // Use hauteurAuDessusNiveauMer from JSON (convert string to number)
+        const alt1 = parseFloat(feature.properties?.hauteurAuDessusNiveauMer || "0");
+        const { isVisible } = calculateVisibility(alt1, seaLevelValue);
+        
+        if (isVisible) {
+            acc.visible++;
+        } else {
+            acc.submerged++;
+        }
+        return acc;
+    }, { visible: 0, submerged: 0 });
+
+    // Filter features based on visibility and search
+    const filteredFeatures = features.filter(feature => {
+        // Use hauteurAuDessusNiveauMer from JSON (convert string to number)
+        const alt1 = parseFloat(feature.properties?.hauteurAuDessusNiveauMer || "0");
+        const { isVisible } = calculateVisibility(alt1, seaLevelValue);
+        const name = feature.properties?.nom?.toLowerCase() || "";
+        
+        // Filter by visibility
+        if (filter === 'visible' && !isVisible) return false;
+        if (filter === 'submerged' && isVisible) return false;
+        
+        // Filter by search query
+        if (searchQuery && !name.includes(searchQuery.toLowerCase())) return false;
+        
+        return true;
+    });
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Water Level Calculator</Text>
-            
-            {/* Sea Level Input (HE) */}
-            <View style={styles.seaLevelCard}>
-                <Text style={styles.seaLevelLabel}>Sea Level Height (HE) in meters:</Text>
-                <TextInput
-                    style={styles.seaLevelInput}
-                    value={seaLevel}
-                    keyboardType="numeric"
-                    onChangeText={setSeaLevel}
-                    placeholder="Enter sea level (e.g., 4.5)"
-                />
-                <Text style={styles.helperText}>
-                    Current sea level: {seaLevelValue.toFixed(2)} m
-                </Text>
-            </View>
+            <ScrollView 
+                style={styles.scrollView}
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={true}
+            >
+                <Text style={styles.title}>Water Level Calculator</Text>
+                
+                {/* Sea Level Input (HE) */}
+                <View style={styles.seaLevelCard}>
+                    <Text style={styles.seaLevelLabel}>Sea Level Height (HE) in meters:</Text>
+                    <TextInput
+                        style={styles.seaLevelInput}
+                        value={seaLevel}
+                        keyboardType="numeric"
+                        onChangeText={setSeaLevel}
+                        placeholder="Enter sea level (e.g., 4.5 or 4,5)"
+                    />
+                    <Text style={styles.helperText}>
+                        Current sea level: {seaLevelValue.toFixed(2)} m (You can use . or ,)
+                    </Text>
+                </View>
 
-            <FlatList
-                data={features}
-                keyExtractor={(_, i) => String(i)}
-                renderItem={({ item, index }) => {
+                {/* Statistics Card */}
+                <View style={styles.statsCard}>
+                    <View style={styles.statItem}>
+                        <Text style={styles.statNumber}>{features.length}</Text>
+                        <Text style={styles.statLabel}>Total Rocks</Text>
+                    </View>
+                    <View style={styles.statDivider} />
+                    <View style={styles.statItem}>
+                        <Text style={[styles.statNumber, styles.statVisible]}>{stats.visible}</Text>
+                        <Text style={styles.statLabel}>Visible</Text>
+                    </View>
+                    <View style={styles.statDivider} />
+                    <View style={styles.statItem}>
+                        <Text style={[styles.statNumber, styles.statSubmerged]}>{stats.submerged}</Text>
+                        <Text style={styles.statLabel}>Submerged</Text>
+                    </View>
+                </View>
+
+                {/* Search Bar */}
+                <View style={styles.searchContainer}>
+                    <TextInput
+                        style={styles.searchInput}
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                        placeholder="Search rocks by name..."
+                        placeholderTextColor="#999"
+                    />
+                    {searchQuery.length > 0 && (
+                        <TouchableOpacity 
+                            style={styles.clearButton}
+                            onPress={() => setSearchQuery("")}
+                        >
+                            <Text style={styles.clearButtonText}>✕</Text>
+                        </TouchableOpacity>
+                    )}
+                </View>
+
+                {/* Filter Buttons */}
+                <View style={styles.filterContainer}>
+                    <TouchableOpacity 
+                        style={[styles.filterButton, filter === 'all' && styles.filterButtonActive]}
+                        onPress={() => setFilter('all')}
+                    >
+                        <Text style={[styles.filterText, filter === 'all' && styles.filterTextActive]}>
+                            All ({features.length})
+                        </Text>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity 
+                        style={[styles.filterButton, filter === 'visible' && styles.filterButtonActive]}
+                        onPress={() => setFilter('visible')}
+                    >
+                        <Text style={[styles.filterText, filter === 'visible' && styles.filterTextActive]}>
+                            🟢 Visible ({stats.visible})
+                        </Text>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity 
+                        style={[styles.filterButton, filter === 'submerged' && styles.filterButtonActive]}
+                        onPress={() => setFilter('submerged')}
+                    >
+                        <Text style={[styles.filterText, filter === 'submerged' && styles.filterTextActive]}>
+                            🔴 Submerged ({stats.submerged})
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* Results count */}
+                <Text style={styles.resultsText}>
+                    Showing {filteredFeatures.length} rock{filteredFeatures.length !== 1 ? 's' : ''}
+                    {searchQuery && ` matching "${searchQuery}"`}
+                </Text>
+
+                {/* Rocks List */}
+                {filteredFeatures.map((item, index) => {
                     const name = item.properties?.nom ?? `#${index + 1}`;
-                    const alt1 = item.properties?.alt1;
+                    // Use hauteurAuDessusNiveauMer from JSON (convert string to number)
+                    const alt1 = parseFloat(item.properties?.hauteurAuDessusNiveauMer || "0");
                     const alt2 = item.properties?.alt2;
                     
                     // Calculate visibility
                     const { isVisible, visibilityHeight } = calculateVisibility(alt1, seaLevelValue);
                     
                     return (
-                        <View style={[
-                            styles.card,
-                            !isVisible && styles.cardSubmerged
-                        ]}>
+                        <View 
+                            key={index}
+                            style={[
+                                styles.card,
+                                !isVisible && styles.cardSubmerged,
+                                index < filteredFeatures.length - 1 && styles.cardMarginBottom
+                            ]}
+                        >
                             <View style={styles.row}>
                                 <Text style={styles.name}>{name}</Text>
                                 <View style={[
@@ -185,9 +307,9 @@ export default function WaterLevelScreen() {
                             </View>
 
                             <View style={styles.dataRow}>
-                                <Text style={styles.label}>Alt1 (reference):</Text>
+                                <Text style={styles.label}>Height above sea level:</Text>
                                 <Text style={styles.value}>
-                                    {alt1 !== null && alt1 !== undefined ? `${alt1} m` : "N/A"}
+                                    {alt1 !== null && !isNaN(alt1) ? `${alt1} m` : "N/A"}
                                 </Text>
                             </View>
 
@@ -206,7 +328,7 @@ export default function WaterLevelScreen() {
                             {visibilityHeight !== null && (
                                 <View style={styles.dataRow}>
                                     <Text style={[styles.label, styles.labelBold]}>
-                                        Visibility (Alt1 - HE):
+                                        Visibility (Height - HE):
                                     </Text>
                                     <Text style={[
                                         styles.value,
@@ -228,20 +350,42 @@ export default function WaterLevelScreen() {
                             </View>
                         </View>
                     );
-                }}
-                ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
-                contentContainerStyle={{ paddingBottom: 32 }}
-            />
+                })}
+            </ScrollView>
 
+            {/* Footer Section - Fixed at bottom */}
             <View style={styles.footer}>
                 <TouchableOpacity style={styles.action} onPress={saveAndExport}>
-                    <Text style={styles.actionText}>Save Data</Text>
+                    <Text style={styles.actionText}>💾 Save Data</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.action, styles.actionSecondary]}
+                    onPress={() => {
+                        // Export visible rocks list
+                        const visibleRocks = features
+                            .filter(f => {
+                                // Use hauteurAuDessusNiveauMer from JSON (convert string to number)
+                                const alt1 = parseFloat(f.properties?.hauteurAuDessusNiveauMer || "0");
+                                const { isVisible } = calculateVisibility(alt1, seaLevelValue);
+                                return isVisible;
+                            })
+                            .map(f => f.properties?.nom)
+                            .join(', ');
+                        
+                        Alert.alert(
+                            "Visible Rocks List",
+                            visibleRocks || "No visible rocks at this sea level",
+                            [{ text: "OK" }]
+                        );
+                    }}
+                >
+                    <Text style={styles.actionText}>📋 Export Visible</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[styles.action, styles.actionReset]}
                     onPress={resetData}
                 >
-                    <Text style={styles.actionText}>Reset</Text>
+                    <Text style={styles.actionText}>🔄 Reset</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -251,8 +395,14 @@ export default function WaterLevelScreen() {
 const styles = StyleSheet.create({
     container: { 
         flex: 1, 
-        padding: 16, 
         backgroundColor: "#f7f7f7" 
+    },
+    scrollView: {
+        flex: 1,
+    },
+    scrollContent: {
+        padding: 16,
+        paddingBottom: 100, // Space for footer buttons
     },
     title: { 
         fontSize: 22, 
@@ -291,6 +441,102 @@ const styles = StyleSheet.create({
         color: "#1565c0",
         fontStyle: "italic",
     },
+    statsCard: {
+        flexDirection: "row",
+        backgroundColor: "#fff",
+        padding: 16,
+        borderRadius: 12,
+        marginBottom: 16,
+        shadowColor: "#000",
+        shadowOpacity: 0.08,
+        shadowRadius: 8,
+        elevation: 3,
+        alignItems: "center",
+        justifyContent: "space-around",
+    },
+    statItem: {
+        alignItems: "center",
+        flex: 1,
+    },
+    statNumber: {
+        fontSize: 28,
+        fontWeight: "700",
+        color: "#1a1a1a",
+    },
+    statVisible: {
+        color: "#4caf50",
+    },
+    statSubmerged: {
+        color: "#f44336",
+    },
+    statLabel: {
+        fontSize: 12,
+        color: "#666",
+        marginTop: 4,
+        textTransform: "uppercase",
+    },
+    statDivider: {
+        width: 1,
+        height: 40,
+        backgroundColor: "#e0e0e0",
+    },
+    searchContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: "#fff",
+        borderRadius: 10,
+        paddingHorizontal: 12,
+        marginBottom: 12,
+        borderWidth: 1,
+        borderColor: "#e0e0e0",
+    },
+    searchInput: {
+        flex: 1,
+        paddingVertical: 12,
+        fontSize: 16,
+        color: "#1a1a1a",
+    },
+    clearButton: {
+        padding: 8,
+    },
+    clearButtonText: {
+        fontSize: 18,
+        color: "#999",
+        fontWeight: "600",
+    },
+    filterContainer: {
+        flexDirection: "row",
+        gap: 8,
+        marginBottom: 12,
+    },
+    filterButton: {
+        flex: 1,
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+        backgroundColor: "#fff",
+        borderWidth: 2,
+        borderColor: "#e0e0e0",
+        alignItems: "center",
+    },
+    filterButtonActive: {
+        backgroundColor: "#2196f3",
+        borderColor: "#2196f3",
+    },
+    filterText: {
+        fontSize: 13,
+        fontWeight: "600",
+        color: "#666",
+    },
+    filterTextActive: {
+        color: "#fff",
+    },
+    resultsText: {
+        fontSize: 14,
+        color: "#666",
+        marginBottom: 16,
+        fontStyle: "italic",
+    },
     card: {
         backgroundColor: "#fff",
         padding: 16,
@@ -306,6 +552,9 @@ const styles = StyleSheet.create({
         backgroundColor: "#ffebee",
         borderColor: "#ef5350",
         borderWidth: 2,
+    },
+    cardMarginBottom: {
+        marginBottom: 12,
     },
     row: { 
         flexDirection: "row", 
@@ -380,22 +629,34 @@ const styles = StyleSheet.create({
         fontWeight: "500",
     },
     footer: {
-        marginTop: 12,
         flexDirection: "row",
         justifyContent: "space-around",
+        gap: 8,
+        padding: 16,
+        paddingBottom: 20,
+        backgroundColor: "#fff",
+        borderTopWidth: 1,
+        borderTopColor: "#e0e0e0",
+        shadowColor: "#000",
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        shadowOffset: { width: 0, height: -2 },
+        elevation: 8,
     },
     action: {
         backgroundColor: "#2196f3",
-        paddingHorizontal: 20,
+        paddingHorizontal: 16,
         paddingVertical: 14,
         borderRadius: 10,
         flex: 1,
-        marginHorizontal: 6,
         alignItems: "center",
         shadowColor: "#000",
         shadowOpacity: 0.2,
         shadowRadius: 4,
         elevation: 4,
+    },
+    actionSecondary: {
+        backgroundColor: "#ff9800",
     },
     actionReset: {
         backgroundColor: "#f44336",
