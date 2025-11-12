@@ -16,3 +16,8 @@ export type Feature= {
     coordinates: number[];
   };
 }
+
+export type FeatureCollection = {
+  type: string;
+  features: Feature[];
+}
