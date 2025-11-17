@@ -1,11 +1,14 @@
-import geoJsonData from "@/assets/geodata/IMT_EntitesRemarquables.json";
+import geoJsonData from "@/assets/geodata/4G6NZVR0_Toponymes.json";
+import localData from "@/assets/geodata/IMT_EntitesRemarquables.json";
+import { ENABLE_TEST_MODE } from "@/config/testMode";
 import { useDevicePitch, useOrientation } from "@/hooks/useDeviceOrietation";
 import { useLocation } from "@/hooks/useLocation";
 import { Coordinates } from "@/types/locationTypes";
 import { calculateBearing, calculateDistance } from "@/utils/calcLocation";
 import { CameraView } from "expo-camera";
+import { useRouter } from "expo-router";
 import { useMemo } from "react";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 // Constants for AR marker visibility and placement
 const ANGLE_VIEW = 80; // Field of view angle for marker display
@@ -13,11 +16,19 @@ const MAX_DIST = 3000; // Maximum distance (in meters) to show markers
 const ANGLE_PITCH = 40; // Minimum pitch angle to show markers
 const { width: screenWidth } = Dimensions.get("window"); // Get device screen width
 
+// Combine both GeoJSON datasets
+// Main dataset with altitude data + local reference points for other areas
+const combinedFeatures = [
+    ...(geoJsonData as any).features,   // Rocks with altitude data (primary dataset)
+    ...(ENABLE_TEST_MODE ? (localData as any).features : [])      // Test Dellec points (only in test mode)
+];
+
 export default function CameraScreen() {
     // Get current location, heading (compass), and pitch (tilt) from custom hooks
     const { location, errorMsg } = useLocation();
     const heading = useOrientation();
     const pitch = useDevicePitch();
+    const router = useRouter();
 
     // Variables to hold distance and bearing to a reference point
     let distance: number | null = null;
@@ -35,8 +46,8 @@ export default function CameraScreen() {
             return [];
         }
 
-        // Map each feature from GeoJSON to a marker if it meets visibility criteria
-        return geoJsonData.features
+        // Map each feature from combined GeoJSON datasets to a marker if it meets visibility criteria
+        return combinedFeatures
             .map((feature: any) => {
                 const coords = feature.geometry.coordinates;
 
@@ -93,21 +104,35 @@ export default function CameraScreen() {
                         ? `${distanceMark.toFixed(0)} m`
                         : `${(distanceMark / 1000).toFixed(1)} km`;
 
-                // Render marker as a View with name and distance
+                // Render marker as a TouchableOpacity with name and distance
+                // When tapped, navigate to water level screen with rock details
                 return (
-                    <View
+                    <TouchableOpacity
                         key={feature.properties.nom}
                         style={[styles.marker, { left: screenX, top: '50%' }, dynamicStyle]}
+                        onPress={() => {
+                            // Navigate to water level screen with rock name and current location
+                            router.push({
+                                pathname: '/(tabs)/(water_level)/level',
+                                params: {
+                                    rockName: feature.properties.nom,
+                                    rockLat: coords[1],
+                                    rockLon: coords[0],
+                                    userLat: location.coords.latitude,
+                                    userLon: location.coords.longitude,
+                                }
+                            });
+                        }}
                     >
                         <Text style={styles.markerText}>{feature.properties.nom}</Text>
                         <Text style={styles.markerDistanceText}>{distanceText}</Text>
 
-                        {(feature.properties.hauteurAuDessusNiveauMer) ?
+                        {(feature.properties.altitude || feature.properties.hauteurAuDessusNiveauMer) ?
                             <Text style={styles.markerDistanceText}>
-                                {feature.properties.hauteurAuDessusNiveauMer} m
+                                {feature.properties.altitude || feature.properties.hauteurAuDessusNiveauMer} m
                             </Text> : null}
 
-                    </View>
+                    </TouchableOpacity>
                 );
             })
             .filter(Boolean); // Remove nulls (invisible markers)
