@@ -8,22 +8,32 @@
     "scheme": "topomar",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Camera required for AR labeling."
+      }
     },
+
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#BABAC1",
         "foregroundImage": "./src/assets/images/logo.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+  "predictiveBackGestureEnabled": false,
+  "package": "com.joaovictorac.ToponymieMarine",
+  "permissions": ["CAMERA"]
     },
+
     "web": {
       "output": "static",
       "favicon": ".src/assets/images/logo.png"
     },
+
     "plugins": [
+      ["expo-camera", { "cameraPermission": "Allow the app to access the camera." }],
       "expo-router",
       [
         "expo-splash-screen",
@@ -32,11 +42,10 @@
           "imageWidth": 393,
           "resizeMode": "cover",
           "backgroundColor": "#BABAC1",
-          "dark": {
-            "backgroundColor": "#BABAC1"
-          }
+          "dark": { "backgroundColor": "#BABAC1" }
         }
       ],
+      "expo-router",
       "expo-font",
       [
         "expo-camera",
@@ -64,11 +73,14 @@
           "requestLocationPermission": true,
           "locationPermission": "Allow $(PRODUCT_NAME) to use your location"
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
+
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
     }
   }
 }
+

@@ -15,4 +15,16 @@ export const textStyle = StyleSheet.create({
     marginBottom: 16,
     fontStyle: "italic",
   },
+    overlayText: {
+    color: 'white',
+    fontSize: 16,
+  },
+    overlay: {
+    position: 'absolute',
+    bottom: 50,
+    left: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 5,
+    padding: 10,
+  },
 });
