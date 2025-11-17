@@ -1,5 +1,5 @@
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { useDeviceOrientation } from '../../../hooks/useDeviceOrientation';
 import { useDevicePitch } from '../../../hooks/useDevicePitch';
@@ -12,31 +12,50 @@ import geoJsonData from '../../../../assets/geodata/IMT_EntitesRemarquables.json
 
 const HORIZONTAL_FOV = 50;   // plus étroit (essaie 45–55)
 const VERTICAL_FOV   = 35;   // “fenêtre” verticale (essaie 30–40)
-const FOV_MARGIN     = 6;    // marge anti-bord pour éviter le clignotement
+const FOV_MARGIN     = 3;    // marge anti-bord pour éviter le clignotement
 const HEADING_OFFSET = 0;    // ajuste à +/– quelques degrés si besoin
-const { width: screenWidth } = Dimensions.get('window');
-const MAX_DEPTH_METERS = 2000; // distance à partir de laquelle on considère "fond"
+const { width: screenWidth,  height: screenHeight } = Dimensions.get('window');
+const MAX_DEPTH_METERS = 3000; // distance à partir de laquelle on considère "fond"
+const HYSTERESIS_DEG = 3;   // marge de grâce quand on sort à peine du cône 
+const VIS_STICK_MS = 600; //on conserve l'étiquette environ 0,8s après sortie du cône 
+// Nouveaux paramètres pour améliorer la précision
+const SMOOTHING_ALPHA_HEADING = 0.2;  // Lissage azimut (0.15->0.2 = plus réactif)
+const SMOOTHING_ALPHA_PITCH = 0.3;    // Lissage pitch
+const MIN_DISTANCE = 50;              // Distance minimale en mètres
+const MAX_DISTANCE = 5000;            // Distance maximale en mètres
+
 
 
 export default function CameraScreen() {
   const { location, errorMsg } = useLocation();
   const deviceHeading = useDeviceOrientation();
-  const pitch = useDevicePitch?.() ?? 0; // si pas de hook, reste à 0
-  // Lissage exponentiel de l’azimut pour calmer le bruit
+  const rawPitch = useDevicePitch?.() ?? 0; // si pas de hook, reste à 0
+  // Lissage de l'azimut avec gestion du 0°/360°
   const [smoothedHeading, setSmoothedHeading] = useState(deviceHeading);
+  const prevHeadingRef = useRef(deviceHeading);
   useEffect(() => {
-    const alpha = 0.2; // 0..1 (plus petit = plus lisse)
     setSmoothedHeading(prev => {
       // lissage avec prise en compte du 0°/360°
       let delta = deviceHeading - prev;
       if (delta > 180) delta -= 360;
       if (delta < -180) delta += 360;
-      return (prev + alpha * delta + 360) % 360;
+      const newHeading = (prev + SMOOTHING_ALPHA_HEADING * delta + 360) % 360;
+      prevHeadingRef.current = newHeading;
+      return newHeading;
     });
   }, [deviceHeading]);
 
-  // Appliquer un éventuel décalage fixe (calibration grossière)
+  // Lissage du pitch (ADDED)
+  const [smoothedPitch, setSmoothedPitch] = useState(rawPitch);
+  useEffect(() => {
+    setSmoothedPitch(prev => 
+      prev + SMOOTHING_ALPHA_PITCH * (rawPitch - prev)
+    );
+  }, [rawPitch]);
+
+  // Appliquer un éventuel décalage fixe 
   const heading = (smoothedHeading + HEADING_OFFSET + 360) % 360;
+  const pitch = smoothedPitch;
 
   const [permission, requestPermission] = useCameraPermissions(); // ADDED
 
@@ -45,11 +64,15 @@ export default function CameraScreen() {
       requestPermission();
     }
   }, [permission]);                                              // ADDED
+
+  //Mémorise le dernier instant où un POI a été visible
+  const lastVisibleRef = useRef<Record<string, number>>({});
   
+  // ==================== CALCUL DES MARQUEURS AR ====================
   const arMarkers = useMemo(() => {
   if (!location?.coords) return [];
 
-  const items: Array<{ element: React.ReactElement; distance: number }> = [];
+  const items: Array<{ element: React.ReactElement; distance: number; bearing: number;}> = [];
 
   geoJsonData.features.forEach((feature: any) => {
     const coords = feature.geometry.coordinates;
@@ -61,98 +84,169 @@ export default function CameraScreen() {
     ) {
       return; // ← on sort de ce feature
     }
-
+    // Coordonnées de l'utilisateur et du rocher
     const targetCoords = { lat2: coords[1], lon2: coords[0] };
     const userCoords   = { lat1: location.coords.latitude, lon1: location.coords.longitude };
 
+    //Calcul de la distance et de la direction du rocher 
     const distance      = getDistance({ ...userCoords, ...targetCoords });
     const targetBearing = getBearing({ ...userCoords, ...targetCoords });
+
+    // Filtrer par distance
+    if (distance < MIN_DISTANCE || distance > MAX_DISTANCE) return;
 
     // --- visibilité H ---
     let angleDifference = targetBearing - heading; // heading = lissé + offset
     if (angleDifference > 180) angleDifference -= 360;
     if (angleDifference < -180) angleDifference += 360;
 
-    const isHorizVisible = Math.abs(angleDifference) < (HORIZONTAL_FOV / 2 - FOV_MARGIN);
+    // Si hors du champs visuel, étiquette n'apparaît pas 
+    const now = Date.now();
+    const halfFov = HORIZONTAL_FOV / 2;
+
+    // test strict
+    const inConeStrict = Math.abs(angleDifference) < (halfFov - FOV_MARGIN);
+
+    // test “presque dedans” (grâce/hystérésis)
+    const inConeNear = Math.abs(angleDifference) < (halfFov - FOV_MARGIN + HYSTERESIS_DEG);
+
+    const name = feature.properties.nom || 'Inconnu';
+    const lastTs = lastVisibleRef.current[name] ?? 0;
+
+    // garder si strictement dedans OU si presque dedans ET qu’on l’a vu récemment
+    const isHorizVisible =
+      inConeStrict || (inConeNear && now - lastTs < VIS_STICK_MS);
+
     if (!isHorizVisible) return;
 
-    // --- visibilité V ---
-    const isVertOK = (-pitch) > -10 && (-pitch) < +15; // ton test actuel
+    // si visible, on met à jour le timestamp (sert à la “grâce”)
+    lastVisibleRef.current[name] = now;
+
+    // ==================== VISIBILITÉ VERTICALE AMÉLIORÉE ====================
+    // Calcul de l'angle vertical attendu basé sur la distance
+    // Plus le rocher est loin, plus il devrait apparaître vers l'horizon
+    const expectedVerticalAngle = Math.atan2(0, distance) * (180 / Math.PI); // ≈0° pour horizon
+    const verticalTolerance = 20; // ±20° de tolérance
+      
+    const pitchDifference = Math.abs(-pitch - expectedVerticalAngle);
+    const isVertOK = pitchDifference < verticalTolerance;
+      
     if (!isVertOK) return;
 
-    // (option) anti-sol dur
-    // if (pitch <= -20) return;
+    // ==================== PROJECTION HORIZONTALE (X) ====================
+    const halfFovRad = (HORIZONTAL_FOV / 2) * Math.PI / 180;
+    const angRad = angleDifference * Math.PI / 180;
 
-    // --- projection X ---
-    const screenX =
-      screenWidth / 2 + (angleDifference / (HORIZONTAL_FOV / 2)) * (screenWidth / 2);
-    const clampedX = Math.max(0, Math.min(screenWidth, screenX));
+    // Limite de sécurité pour éviter tan() → ∞
+    const EPS_DEG = 1;
+    const maxAngRad = ((HORIZONTAL_FOV / 2 - EPS_DEG) * Math.PI) / 180;
+    const angRadClamped = Math.max(-maxAngRad, Math.min(maxAngRad, angRad));
 
-    // --- “perspective” selon la distance ---
-    const depth   = Math.max(0, 1 - distance / MAX_DEPTH_METERS); // 1=près, 0=loin
-    const zIndex  = 1000 + Math.round(depth * 1000);
-    const scale   = 0.8 + 0.7 * depth;     // 0.8..1.5
-    const opacity = 0.5 + 0.5 * depth;     // 0.5..1.0
+    // Projection en perspective
+    const normX = Math.tan(angRadClamped) / Math.tan(halfFovRad);
+    const screenX = screenWidth / 2 + (normX * screenWidth) / 2;
+    const clampedX = Math.max(20, Math.min(screenWidth - 20, screenX));
 
-    // (option) léger placement vertical
-    const { height: screenHeight } = Dimensions.get('window');
-    const topPx = screenHeight * (0.50 - 0.05 * (1 - depth)); // ajuste le 0.05 si tu veux
+    // ==================== PROJECTION VERTICALE (Y) AMÉLIORÉE ====================
+    // Position Y basée sur:
+    // 1. Distance (plus loin = plus haut vers horizon)
+    // 2. Pitch du téléphone (compensation)
+      
+    const distanceFactor = Math.min(distance / MAX_DEPTH_METERS, 1);
+      
+    // Position de base au centre de l'écran
+    const centerY = screenHeight * 0.5;
+      
+    // Décalage basé sur la distance (loin = monte vers horizon)
+    const distanceOffset = distanceFactor * (screenHeight * 0.2);
+      
+    // Compensation du pitch (si on pointe vers le haut, les labels descendent)
+    const pitchOffset = (-pitch / 90) * (screenHeight * 0.3);
+      
+    const screenY = centerY - distanceOffset + pitchOffset;
+    const clampedY = Math.max(50, Math.min(screenHeight - 50, screenY));
 
-    const distanceText =
-      distance < 1000 ? `${distance.toFixed(0)} m` : `${(distance / 1000).toFixed(1)} km`;
+    // ==================== EFFETS DE PROFONDEUR ====================
+    const depth = Math.max(0, 1 - distance / MAX_DEPTH_METERS);
+    const zIndex = 1000 + Math.round(depth * 1000);
+      
+    // Scale plus progressif
+    const scale = 0.7 + 0.5 * depth; // 0.7 (loin) -> 1.2 (près)
+      
+    // Opacity plus visible
+    const opacity = 0.6 + 0.4 * depth; // 0.6 -> 1.0
 
+    const distanceText = distance < 1000 
+      ? `${distance.toFixed(0)} m` 
+      : `${(distance / 1000).toFixed(1)} km`;
+
+    // ==================== RENDU DU MARQUEUR ====================
     const element = (
       <View
-        key={feature.properties.nom}
+        key={name}
         pointerEvents="none"
         style={[
-          styles.marker,                          // doit avoir position:'absolute'
-          { left: clampedX, top: topPx, zIndex }, // zIndex ici
-          {
+          styles.marker,
+          { 
+            left: clampedX, 
+            top: clampedY, 
+            zIndex,
             transform: [
-              { translateX: -feature.properties.nom.length * 4 },
+              { translateX: -name.length * 3.5 }, // Centrage du texte
+              { translateY: -15 }, // Ajustement vertical
               { scale }
             ],
             opacity
           }
         ]}
       >
-        <Text style={styles.markerText}>{feature.properties.nom}</Text>
+        <Text style={styles.markerText}>{name}</Text>
         <Text style={styles.markerDistanceText}>{distanceText}</Text>
       </View>
     );
 
-    // On empile dans la liste pour trier après
-    items.push({ element, distance });
+    items.push({ element, distance, bearing: targetBearing });
   });
 
-  // Tri: plus proche → plus loin
+  // Tri par distance (proche → loin)
   items.sort((a, b) => a.distance - b.distance);
-
-  // On renvoie seulement les éléments
   return items.map(i => i.element);
 }, [location, heading, pitch]);
+
+  // ==================== GESTION DES PERMISSIONS ====================
   if (!permission) {
-    return <View style={styles.container}><Text>Checking camera permission…</Text></View>; // ADDED
+    return (
+      <View style={styles.container}>
+        <Text>Vérification des permissions…</Text>
+      </View>
+    );
   }
   if (!permission.granted) {
-    return <View style={styles.container}><Text>Camera permission is required</Text></View>; // ADDED
+    return (
+      <View style={styles.container}>
+        <Text>Permission caméra requise</Text>
+      </View>
+    );
   }
 
-
+  // ==================== RENDU FINAL ====================
   return (
     <View style={styles.container}>
-      <CameraView style={StyleSheet.absoluteFill} facing="back" active={true} />
+      <CameraView 
+        style={StyleSheet.absoluteFill} 
+        facing="back" 
+        active={true} 
+      />
       {arMarkers}
       <View style={styles.overlay} pointerEvents="none">
         {location ? (
           <Text style={styles.overlayText}>
-            Heading: {heading.toFixed(1)}°
+            Azimut: {heading.toFixed(1)}° | Pitch: {pitch.toFixed(1)}° | 
+            POIs: {arMarkers.length}
           </Text>
         ) : (
           <Text style={styles.overlayText}>
-            {errorMsg || 'Aguardando localização...'}
-            Heading: {heading.toFixed(1)}°  |  Pitch: {pitch.toFixed(1)}°
+            {errorMsg || 'En attente de localisation...'}
           </Text>
         )}
       </View>
