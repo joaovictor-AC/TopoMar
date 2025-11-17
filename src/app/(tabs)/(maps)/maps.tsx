@@ -1,27 +1,21 @@
-import geojson from "@/src/assets/geodata/4G6NZVR0_Height_Toponymes.json";
-import { StyleSheet, View } from "react-native";
+import geojson from "@/assets/geodata/4G6NZVR0_Height_Toponymes.json";
+import { INITIAL_REGION } from "@/constants/maps_region";
+import { screenStyle } from "@/style/screen/screen_style";
+import { View } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
 // MapsScreen: shows a map centered on a region and renders markers from a GeoJSON file.
 export default function MapsScreen() {
 
-    // initialRegion: map center and zoom (latitudeDelta/longitudeDelta control zoom level)
-    const initialRegion = {
-        latitude: 48.65870936500545, // center latitude
-        longitude: -4.436788867429383, // center longitude
-        latitudeDelta: 0.09,
-        longitudeDelta: 0.05,
-    };
-
     return (
         // container wraps the MapView to fill the screen
-        <View style={styles.container}>
+        <View style={{flex: 1}}>
 
             {/* MapView: provider set to Google, starts at initialRegion and shows device location */}
             <MapView
-                style={styles.map}
+                style={screenStyle.background}
                 provider={PROVIDER_GOOGLE}
-                initialRegion={initialRegion}
+                initialRegion={INITIAL_REGION}
                 showsUserLocation={true} // show blue dot for user's current position (requires permissions)
             >
                 {/* Render a Marker for each GeoJSON feature */}
@@ -44,18 +38,3 @@ export default function MapsScreen() {
         </View>
     );
 }
-
-// Styles: keep the map full-screen and container flexible
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    map: {
-        width: '100%',
-        height: '100%',
-    },
-    errorText: {
-        color: 'red',
-        padding: 10,
-    }
-});

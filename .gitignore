@@ -44,3 +44,9 @@ app-example
 
 # Documentation of the project 
 /docs
+
+# Configuración de Figma (mantener .figmarc.json pero ignorar tokens)
+figma-tokens.json
+*.figma-token
+.figma-cache/
+figma-temp/

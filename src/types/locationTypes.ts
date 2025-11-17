@@ -10,6 +10,8 @@ export type Feature= {
     featureType: string;
     hauteurAuDessusNiveauMer: string;
     nom: string;
+    alt1?: number | null;  // Height reference for rock
+    alt2?: number | null;  // Secondary height reference
   };
   geometry: {
     type: string;

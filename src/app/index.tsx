@@ -1,57 +1,74 @@
-import { Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+// Import navigation and core React Native components
+import { buttonStyle } from "@/style/button/button_style";
+import { iconStyle } from "@/style/icon/icon_style";
+import { screenStyle } from "@/style/screen/screen_style";
+import { useRouter } from "expo-router";
+import { Image, ImageBackground, TouchableOpacity, View } from "react-native";
 
+// --- Assets ---
+// Load all required images locally. 'require' ensures they are bundled with the app.
+const OCAEN_BACKGROUN = require('../assets/images/home_screen.png');
+const MAP_PIN_ICON = require('../assets/images/map_pin.png');
+const CAMERA_ICON = require('../assets/images/camera.png');
+const WAVES_ICON = require('../assets/images/vector.png');
+
+/**
+ * Main home screen component (Index route).
+ * Displays navigation buttons over a background image.
+ */
 export default function Index() {
+  // 'useRouter' hook provides navigation functions.
+  const router = useRouter();
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>HOME PAGE</Text>
+    <ImageBackground
+      source={OCAEN_BACKGROUN}
+      style={screenStyle.background}
+      resizeMode="cover"
+    >
+      <View style={screenStyle.container}>
+        <View style={buttonStyle.buttonContainer}>
+          
+          {/* Map Navigation Button */}
+          <TouchableOpacity 
+            style={buttonStyle.ellipseButton}
+            onPress={() => router.push("/maps")} // Navigate to the /maps screen on press
+            activeOpacity={0.7}
+          >
+            <Image 
+              source={MAP_PIN_ICON}
+              style={iconStyle.icon}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
 
-      <View style={styles.links}>
-        <Link href={"/camera"} style={styles.link}>
-          <Text style={styles.linkText}>CAMERA</Text>
-        </Link>
+          {/* Camera Navigation Button */}
+          <TouchableOpacity 
+            style={buttonStyle.ellipseButton}
+            onPress={() => router.push("/camera")} // Navigate to the /camera screen on press
+            activeOpacity={0.7}
+          >
+            <Image 
+              source={CAMERA_ICON}
+              style={iconStyle.icon}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
 
-        <Link href={"/maps"} style={styles.link}>
-          <Text style={styles.linkText}>MAPS</Text>
-        </Link>
-
-        <Link href={"/level"} style={styles.link}>
-          <Text style={styles.linkText}>WATER LEVEL</Text>
-        </Link>
+          {/* Water Level Navigation Button */}
+          <TouchableOpacity 
+            style={buttonStyle.ellipseButton}
+            onPress={() => router.push("/level")} // Navigate to the /level screen on press
+            activeOpacity={0.7}
+          >
+            <Image 
+              source={WAVES_ICON}
+              style={iconStyle.icon}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    backgroundColor: "#f7f7f7",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#1f2937",
-    marginBottom: 20,
-  },
-  links: {
-    width: "100%",
-    maxWidth: 420,
-  },
-  link: {
-    backgroundColor: "#0a84ff",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-    marginVertical: 8,
-    alignItems: "center",
-  },
-  linkText: {
-    color: "#ffffff",
-    fontWeight: "600",
-    fontSize: 16,
-  },
-});
