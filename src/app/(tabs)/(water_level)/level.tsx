@@ -11,7 +11,7 @@ import { textStyle } from "@/style/text/text_style";
 import { themeColor } from "@/style/theme";
 import { Feature } from "@/types/locationTypes";
 import { calculateVisibility } from "@/utils/calcHeight";
-import React, { useState } from "react"; // Removed useEffect, useCallback
+import React, { useState } from "react";
 import {
     Alert,
     ScrollView,
@@ -169,7 +169,7 @@ export default function WaterLevelScreen() {
                         onPress={() => setFilter('visible')}
                     >
                         <Text style={[textStyle.filterText, filter === 'visible' && textStyle.filterTextActive]}>
-                            🟢 Visible ({stats.visible})
+                            Visible ({stats.visible})
                         </Text>
                     </TouchableOpacity>
                     
@@ -178,7 +178,7 @@ export default function WaterLevelScreen() {
                         onPress={() => setFilter('submerged')}
                     >
                         <Text style={[textStyle.filterText, filter === 'submerged' && textStyle.filterTextActive]}>
-                            🔴 Submerged ({stats.submerged})
+                            Submerged ({stats.submerged})
                         </Text>
                     </TouchableOpacity>
                 </View>

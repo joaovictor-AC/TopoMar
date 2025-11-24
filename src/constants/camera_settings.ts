@@ -8,4 +8,4 @@ export const VIS_STICK_MS = 600; //on conserve l'étiquette environ 0,8s après 
 export const SMOOTHING_ALPHA_HEADING = 0.2;  // Lissage azimut (0.15->0.2 = plus réactif)
 export const SMOOTHING_ALPHA_PITCH = 0.3;    // Lissage pitch
 export const MIN_DISTANCE = 50;              // Distance minimale en mètres
-export const MAX_DISTANCE = 5000;            // Distance maximale en mètres
+export const MAX_DISTANCE = 100000;            // Distance maximale en mètres
