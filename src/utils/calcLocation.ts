@@ -11,6 +11,15 @@ const toRadians = (degrees: number): number => {
   return degrees * (Math.PI / 180);
 };
 
+/** Converts an angle from radians to degrees.
+ * @param {number} radians - The angle in radians to convert.
+ * @returns {number} The equivalent angle in degrees.
+ * @internal
+ */
+const toDegrees = (radians: number): number => {
+  return radians * (180 / Math.PI);
+}
+
 /**
  * Calculates the distance between two geographical points.
  *
@@ -84,5 +93,6 @@ export const calculateBearing = (
   let bearingRad = Math.atan2(y, x);
 
   // Final bearing in degrees
-  return ((bearingRad * 180) / Math.PI + 360) % 360;
+  return (toDegrees(bearingRad) + 360) % 360; // Normalize to 0-360 degrees
+  
 };

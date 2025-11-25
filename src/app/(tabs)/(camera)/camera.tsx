@@ -197,7 +197,7 @@ export default function CameraScreen() {
     return items.map(i => i.element);
   }, [location, heading, pitch]);
 
-  
+  // ==================== GESTION DES PERMISSIONS ====================
   if (!permission) {
     return (
       <View style={screenStyle.container}>
@@ -213,6 +213,7 @@ export default function CameraScreen() {
     );
   }
 
+  // ==================== RENDU FINAL ====================
   return (
     <View style={screenStyle.container}>
       <CameraView

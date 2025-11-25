@@ -5,7 +5,7 @@ export const HEADING_OFFSET = 0;    // ajuste à +/– quelques degrés si besoi
 export const MAX_DEPTH_METERS = 3000; // distance à partir de laquelle on considère "fond"
 export const HYSTERESIS_DEG = 3;   // marge de grâce quand on sort à peine du cône 
 export const VIS_STICK_MS = 600; //on conserve l'étiquette environ 0,8s après sortie du cône 
-export const SMOOTHING_ALPHA_HEADING = 0.2;  // Lissage azimut (0.15->0.2 = plus réactif)
-export const SMOOTHING_ALPHA_PITCH = 0.3;    // Lissage pitch
+export const SMOOTHING_ALPHA_HEADING = .2;  // Lissage azimut (0.15->0.2 = plus réactif)
+export const SMOOTHING_ALPHA_PITCH = .3;    // Lissage pitch
 export const MIN_DISTANCE = 50;              // Distance minimale en mètres
-export const MAX_DISTANCE = 100000;            // Distance maximale en mètres
+export const MAX_DISTANCE = 5000;            // Distance maximale en mètres
