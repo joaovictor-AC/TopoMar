@@ -1,10 +1,11 @@
+import { SUBMERGED, VISIBLE } from "@/constants/colors";
 import { StyleSheet } from "react-native";
 
 export const themeColor = StyleSheet.create({
   visibleTheme: {
-    backgroundColor: "#4caf50",
+    backgroundColor: VISIBLE,
   },
   submergedTheme: {
-    backgroundColor: "#f44336",
+    backgroundColor: SUBMERGED,
   },
 });

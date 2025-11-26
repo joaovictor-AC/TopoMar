@@ -1,15 +1,18 @@
 import geoJsonData from '@/assets/geodata/IMT_EntitesRemarquables.json';
+import FeatureModal from '@/components/FeatureModal';
 import { FOV_MARGIN, HEADING_OFFSET, HORIZONTAL_FOV, HYSTERESIS_DEG, MAX_DEPTH_METERS, MAX_DISTANCE, MIN_DISTANCE, SMOOTHING_ALPHA_HEADING, SMOOTHING_ALPHA_PITCH, VIS_STICK_MS } from '@/constants/camera_settings';
 import { HEIGHT_SCREEN, WIDTH_SCREEN } from '@/constants/phone_dimensions';
+import { useDataPersistence } from '@/hooks/useDataPersistence';
 import { useDevicePitch, useOrientation } from '@/hooks/useDeviceOrietation';
 import { useLocation } from '@/hooks/useLocation';
 import { markerStyle } from '@/style/marker/marker_style';
 import { screenStyle } from '@/style/screen/screen_style';
 import { textStyle } from '@/style/text/text_style';
+import { calculateVisibility } from '@/utils/calcHeight';
 import { calculateBearing, calculateDistance } from '@/utils/calcLocation';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function CameraScreen() {
   const { location, errorMsg } = useLocation();
@@ -44,6 +47,25 @@ export default function CameraScreen() {
 
   const [permission, requestPermission] = useCameraPermissions(); // ADDED
 
+  // Refs and selection state for markers / modal
+  const markerRefs = useRef<any[]>([]);
+  const [selectedFeature, setSelectedFeature] = useState<any>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  // Read persisted sea level and delta so visibility reflects saved values
+  const { features: persistedFeatures, seaLevel, delta } = useDataPersistence(geoJsonData as any);
+  const seaLevelValue = parseFloat(String(seaLevel).replace(',', '.')) || 0;
+  const deltaValue = parseFloat(String(delta).replace(',', '.')) || 0;
+
+  // For the selected feature (e.g., when tapping a marker) compute current visibility
+  const selectedVisibility = selectedFeature
+    ? (() => {
+      const alt1 = parseFloat(selectedFeature?.properties?.altitude || '0');
+      const { isVisible } = calculateVisibility(alt1, seaLevelValue, deltaValue);
+      return isVisible ? 'VISIBLE' : 'SUBMERGED';
+    })()
+    : null;
+
   useEffect(() => {                                              // ADDED
     if (permission && !permission.granted) {
       requestPermission();
@@ -59,7 +81,7 @@ export default function CameraScreen() {
 
     const items: Array<{ element: React.ReactElement; distance: number; bearing: number; }> = [];
 
-    geoJsonData.features.forEach((feature: any) => {
+    (persistedFeatures && persistedFeatures.length ? persistedFeatures : geoJsonData.features).forEach((feature: any) => {
       const coords = feature.geometry.coordinates;
       if (
         !Array.isArray(coords) ||
@@ -75,6 +97,13 @@ export default function CameraScreen() {
       //Calcul de la distance et de la direction du rocher 
       const distance = calculateDistance(location.coords, targetCoords);
       const targetBearing = calculateBearing(location.coords, targetCoords);
+
+      // --- visibilité selon altitude / niveau de la mer (persisted values)
+      const alt1 = parseFloat(feature?.properties?.altitude || '0');
+      const { isVisible: isVisibleByHeight } = calculateVisibility(alt1, seaLevelValue, deltaValue);
+
+      // Se a rocha for considerada visível pelo cálculo (ou seja, não submersa), não mostrar o card
+      if (isVisibleByHeight) return;
 
       // Filtrer par distance
       if (distance < MIN_DISTANCE || distance > MAX_DISTANCE) return;
@@ -166,9 +195,13 @@ export default function CameraScreen() {
 
       // ==================== RENDU DU MARQUEUR ====================
       const element = (
-        <View
+        <TouchableOpacity
           key={name}
-          pointerEvents="none"
+          activeOpacity={0.8}
+          onPress={() => {
+            setSelectedFeature(feature);
+            setModalVisible(true);
+          }}
           style={[
             markerStyle.marker,
             {
@@ -186,7 +219,7 @@ export default function CameraScreen() {
         >
           <Text style={markerStyle.markerText}>{name}</Text>
           <Text style={markerStyle.markerDistanceText}>{distanceText}</Text>
-        </View>
+        </TouchableOpacity>
       );
 
       items.push({ element, distance, bearing: targetBearing });
@@ -234,6 +267,17 @@ export default function CameraScreen() {
           </Text>
         )}
       </View>
+      {/* Modal detalhado para o marcador selecionado (reutilizável) */}
+      <FeatureModal
+        visible={modalVisible}
+        feature={selectedFeature}
+        seaLevel={seaLevelValue}
+        delta={deltaValue}
+        onClose={() => {
+          setModalVisible(false);
+          setSelectedFeature(null);
+        }}
+      />
     </View>
   );
 }

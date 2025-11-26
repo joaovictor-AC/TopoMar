@@ -1,6 +1,6 @@
 // @/hooks/useGeoDataPersistence.ts
 
-import { Feature } from "@/types/locationTypes";
+import { Feature, FeatureCollection } from "@/types/locationTypes";
 import * as FileSystem from "expo-file-system/legacy";
 import { useCallback, useEffect, useState } from "react";
 import { Alert } from "react-native";
@@ -13,10 +13,12 @@ import { Alert } from "react-native";
  * @param {object} geojson - The original geojson object to merge with saved data.
  * @returns An object containing state variables and functions for data management.
  */
-export const useDataPersistence = (initialFeatures: Feature[], geojson: object) => {
+export const useDataPersistence = (geojson: FeatureCollection) => {
 
     // Define a file URI in the app's persistent document directory
     const FILE_URI = FileSystem.documentDirectory + "myGeoData.json";
+    const initialFeatures = geojson.features as Feature[] || [];
+
     // Keep the original data as a fallback
     const initial = initialFeatures.map((f) => ({ ...f }));
 
@@ -28,7 +30,7 @@ export const useDataPersistence = (initialFeatures: Feature[], geojson: object) 
     const [seaLevel, setSeaLevel] = useState<string>("8.0");
     
     // State for delta
-    const [delta, setDelta] = useState<string>("4.5");
+    const [delta, setDelta] = useState<string>(geojson.deltaReference || "4.5");
 
     // Load saved data when the hook is first used
     useEffect(() => {
@@ -93,8 +95,8 @@ export const useDataPersistence = (initialFeatures: Feature[], geojson: object) 
                         try {
                             await FileSystem.deleteAsync(FILE_URI, { idempotent: true });
                             setFeatures(initial); // Reset to the initial map
-                            setSeaLevel("0");
-                            setDelta("0");
+                            setSeaLevel("8.0");
+                            setDelta(geojson.deltaReference || "4.5");
                             Alert.alert("Reset", "Data has been reset.");
                         } catch (e) {
                             console.error("Failed to reset data", e);

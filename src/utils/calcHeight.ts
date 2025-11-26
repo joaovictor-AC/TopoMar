@@ -13,7 +13,7 @@
 export const calculateVisibility = (
   alt1: number | null | undefined,
   seaLevelValue: number,
-  delta: number = 4.5
+  delta: number
 ): {
   isVisible: boolean;
   visibilityHeight: number | null;

@@ -8,7 +8,7 @@ export type Feature= {
   type: string;
   properties: {
     featureType: string;
-    hauteurAuDessusNiveauMer: string;
+    altitude: string;
     nom: string;
     alt1?: number | null;  // Height reference for rock
     alt2?: number | null;  // Secondary height reference
@@ -22,4 +22,5 @@ export type Feature= {
 export type FeatureCollection = {
   type: string;
   features: Feature[];
+  deltaReference?: string;
 }

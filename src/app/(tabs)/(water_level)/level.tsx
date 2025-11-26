@@ -1,6 +1,4 @@
-// @/screens/WaterLevelScreen.tsx
-
-import geojson from "@/assets/geodata/4G6NZVR0_Height_Toponymes.json";
+import geojson from "@/assets/geodata/kerlouan.json";
 import LoadingScreen from "@/components/loadingScreen";
 import { buttonStyle } from "@/style/button/button_style";
 import { cardStyle } from "@/style/card/card_style";
@@ -9,11 +7,9 @@ import { screenStyle } from "@/style/screen/screen_style";
 import { statsStyle } from "@/style/stats/stats_style";
 import { textStyle } from "@/style/text/text_style";
 import { themeColor } from "@/style/theme";
-import { Feature } from "@/types/locationTypes";
 import { calculateVisibility } from "@/utils/calcHeight";
 import React, { useState } from "react";
 import {
-    Alert,
     ScrollView,
     Text,
     TextInput,
@@ -22,9 +18,6 @@ import {
 } from "react-native";
 // Import your new hook
 import { useDataPersistence } from "@/hooks/useDataPersistence";
-
-// Keep the original data as a fallback - load it ONCE
-const initial = (geojson as any).features as Feature[] || [];
 
 export default function WaterLevelScreen() {
     // Call the hook to get all persistence logic and state
@@ -37,7 +30,7 @@ export default function WaterLevelScreen() {
         isLoading,
         saveData,    // Renamed from saveAndExport
         resetData
-    } = useDataPersistence(initial, geojson);
+    } = useDataPersistence(geojson);
     
     // State for UI filtering (this is NOT persistence logic)
     const [filter, setFilter] = useState<'all' | 'visible' | 'submerged'>('all');
@@ -51,13 +44,12 @@ export default function WaterLevelScreen() {
     // --- Calculation logic remains in the component ---
     const seaLevelValue = parseFloat(seaLevel.replace(',', '.')) || 0;
     const deltaValue = parseFloat(delta.replace(',', '.')) || 0;
-    const effectiveSeaLevel = seaLevelValue + deltaValue;
 
     // Calculate statistics
     const stats = features.reduce((acc, feature) => {
         // Use hauteurAuDessusNiveauMer from JSON (convert string to number)
-        const alt1 = parseFloat(feature.properties?.hauteurAuDessusNiveauMer || "0");
-        const { isVisible } = calculateVisibility(alt1, effectiveSeaLevel);
+        const alt1 = parseFloat(feature.properties?.altitude || "0");
+        const { isVisible } = calculateVisibility(alt1, seaLevelValue, deltaValue);
         
         if (isVisible) {
             acc.visible++;
@@ -70,8 +62,8 @@ export default function WaterLevelScreen() {
     // Filter features based on visibility and search
     const filteredFeatures = features.filter(feature => {
         // Use hauteurAuDessusNiveauMer from JSON (convert string to number)
-        const alt1 = parseFloat(feature.properties?.hauteurAuDessusNiveauMer || "0");
-        const { isVisible } = calculateVisibility(alt1, effectiveSeaLevel);
+        const alt1 = parseFloat(feature.properties?.altitude || "0");
+        const { isVisible } = calculateVisibility(alt1, seaLevelValue, deltaValue);
         const name = feature.properties?.nom?.toLowerCase() || "";
         
         // Filter by visibility
@@ -193,11 +185,11 @@ export default function WaterLevelScreen() {
                 {filteredFeatures.map((item, index) => {
                     const name = item.properties?.nom ?? `#${index + 1}`;
                     // Use hauteurAuDessusNiveauMer from JSON (convert string to number)
-                    const alt1 = parseFloat(item.properties?.hauteurAuDessusNiveauMer || "0");
+                    const alt1 = parseFloat(item.properties?.altitude || "0");
                     const alt2 = item.properties?.alt2;
                     
                     // Calculate visibility
-                    const { isVisible, visibilityHeight } = calculateVisibility(alt1, effectiveSeaLevel);
+                    const { isVisible, visibilityHeight } = calculateVisibility(alt1, seaLevelValue, deltaValue);
                     
                     return (
                         <View 
@@ -244,26 +236,11 @@ Next, I'd like to show the `effectiveSeaLevel` in the `Sea Level Input` card. Ca
                                 <Text style={cardStyle.value}>{deltaValue.toFixed(2)} m</Text>
                             </View>
 
-                            {visibilityHeight !== null && (
-                                <View style={cardStyle.dataRow}>
-                                    <Text style={[cardStyle.label, cardStyle.labelBold]}>
-                                        Visibility (Height - HE):
-                                    </Text>
-                                    <Text style={[
-                                        cardStyle.value,
-                                        cardStyle.valueBold,
-                                        visibilityHeight < 0 ? statsStyle.submergedText : statsStyle.visibleText
-                                    ]}>
-                                        {visibilityHeight.toFixed(2)} m
-                                    </Text>
-                                </View>
-                            )}
-
                             <View style={cardStyle.infoBox}>
                                 <Text style={cardStyle.infoText}>
                                     {isVisible 
-                                        ? `✓ Rock is ${visibilityHeight?.toFixed(2)}m above water`
-                                        : `✗ Rock is ${Math.abs(visibilityHeight || 0).toFixed(2)}m below water`
+                                        ? `✅ Rock is ${visibilityHeight?.toFixed(2)}m above water`
+                                        : `❌ Rock is ${Math.abs(visibilityHeight || 0).toFixed(2)}m below water`
                                     }
                                 </Text>
                             </View>
@@ -277,29 +254,7 @@ Next, I'd like to show the `effectiveSeaLevel` in the `Sea Level Input` card. Ca
                 <TouchableOpacity style={buttonStyle.action} onPress={saveData}>
                     <Text style={buttonStyle.actionText}>Save Data</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                    style={[buttonStyle.action, buttonStyle.actionSecondary]}
-                    onPress={() => {
-                        // Export visible rocks list
-                        const visibleRocks = features
-                            .filter(f => {
-                                // Use hauteurAuDessusNiveauMer from JSON (convert string to number)
-                                const alt1 = parseFloat(f.properties?.hauteurAuDessusNiveauMer || "0");
-                                const { isVisible } = calculateVisibility(alt1, effectiveSeaLevel);
-                                return isVisible;
-                            })
-                            .map(f => f.properties?.nom)
-                            .join(', ');
-                        
-                        Alert.alert(
-                            "Visible Rocks List",
-                            visibleRocks || "No visible rocks at this sea level",
-                            [{ text: "OK" }]
-                        );
-                    }}
-                >
-                    <Text style={buttonStyle.actionText}>Export Visible</Text>
-                </TouchableOpacity>
+
                 <TouchableOpacity
                     style={[buttonStyle.action, buttonStyle.actionReset]}
                     onPress={resetData}
