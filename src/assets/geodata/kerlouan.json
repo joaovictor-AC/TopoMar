@@ -1,0 +1,908 @@
+{
+	"type":"FeatureCollection",
+	"deltaReference" : "4.5",
+	"features":[
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"1.2",
+				"featureType":"Rocher en mer",
+				"nom":"Pil an Touilhed"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4533698,48.6579527]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"3.2",
+				"featureType":"Rocher en mer",
+				"nom":"Ulvennou Pell"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4551801,48.6601895]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"0.6",
+				"featureType":"Rocher en mer",
+				"nom":"Pil Mariannig Salou"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4519506,48.6615468]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"3.6",
+				"featureType":"Rocher en mer",
+				"nom":"Pil Plad"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4495811,48.662702]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"0.8",
+				"featureType":"Rocher en mer",
+				"nom":"Pil Bihan Henguer"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4474726,48.6613474]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"3.5",
+				"featureType":"Rocher en mer",
+				"nom":"Henguer"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4426906,48.6610414]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"0.9",
+				"featureType":"Rocher en mer",
+				"nom":"Pilar Piroun"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4409524,48.6586819]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"0.1",
+				"featureType":"Rocher en mer",
+				"description":"N. Roh blad, hir-rezonabl, goloet gand bezin du, en traof da 'Stao] Vian'. ",
+				"nom":"Ar Garreg Krenn"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4400337,48.6577745]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"1.1",
+				"featureType":"Rocher en mer",
+				"nom":"Ar Spernenn Vraz"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4398221,48.6629118]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"0.0",
+				"featureType":"Rocher en mer",
+				"nom":"Ar Spernenn Vihan"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4388379,48.6623684]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"1.0",
+				"featureType":"Rocher en mer",
+				"description":"   N. N'ema ket merket war ar hartennou. Ema e-kreizig an hent bageal hanter-vare a hoari etre 'Brellum' ha penn  nord 'Ar Garreg Wenn'.",
+				"nom":"Pil Ar Jardin",
+				"audio":"Pil Ar Jardin.mp3"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4334212,48.6583107]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"1.7",
+				"featureType":"Rocher en mer",
+				"nom":"Karreg al Lostog"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4274729,48.6549956]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"10.7",
+				"featureType":"Rocher à terre",
+				"description":"N.Bodad-reierigou war an dorgenn, en neh da 'Gorre Kignet” Klevet an ‘n' fréz eur wech, ket 2 wech Sanset e vefe eur roh “fall”, da lavared eo damvilliget. Da skwer, ma z afe ar hazekenned peotramant ar zaout d'en em frotañ outo e vefent klañv da vervel eun nebeud amzer goude. ",
+				"nom":"Reier Mên Lus"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4336511,48.6553606]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"2.2",
+				"featureType":"Rocher en mer",
+				"nom":"Reier ar Besketerien"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4206639,48.6544938]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"2.7",
+				"featureType":"Rocher en mer",
+				"nom":"An Dizoudoù"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4174135,48.6556329]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"1.9",
+				"featureType":"Rocher en mer",
+				"nom":"Pilar Vartoloded"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4169246,48.6613357]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"3.4",
+				"featureType":"Rocher en mer",
+				"nom":"Ilgouarn"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4128775,48.6602421]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"0.0",
+				"featureType":"Rocher en mer",
+				"nom":"Kiniveier Vihan"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4237147,48.6618348]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"2.5",
+				"featureType":"Rocher en mer",
+				"nom":"Ar Roc'h War Laez ar Guiniveier"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4252256,48.6643381]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"0.5",
+				"featureType":"Rocher en mer",
+				"nom":"Ar Roc'h Distag"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4276542,48.6634555]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"1.1",
+				"featureType":"Rocher en mer",
+				"nom":"Belerig Vraz"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4104401,48.6582594]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"0.1",
+				"featureType":"Rocher en mer",
+				"nom":"Pil Joupé"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4410161,48.6603604]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"0.0",
+				"featureType":"Rocher en mer",
+				"nom":"Mean ar Hrilh"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4526936,48.6634305]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"15.2",
+				"featureType":"Rocher à terre",
+				"nom":"Karreg Vraz"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4368261,48.6582044]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"4.59",
+				"featureType":"Rocher en mer",
+				"nom":"Beg Pil Yann"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4160737,48.658563]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"4.9",
+				"featureType":"Rocher en mer",
+				"nom":"An Daoualhenn"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4181455,48.6574883]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"0.4",
+				"featureType":"Rocher en mer",
+				"nom":"Penn ar Manac'h"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4272762,48.6562954]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"5.9",
+				"featureType":"Rocher en mer",
+				"nom":"Ar Vein Dan"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4210528,48.6582497]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"3.2",
+				"featureType":"Rocher en mer",
+				"nom":"Ar Pladennoù"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4219385,48.656789]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"0.4",
+				"featureType":"Rocher en mer",
+				"nom":"Piloùar Fank Du"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4216448,48.6552895]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"0.8",
+				"featureType":"Rocher en mer",
+				"nom":"Mean Pig Bihan"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.470823,48.6670196]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"1.4",
+				"featureType":"Rocher en mer",
+				"nom":"Pont Ulvennoù"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4536307,48.6609083]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"0.7",
+				"featureType":"Rocher en mer",
+				"nom":"Reier an Arhant"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4294059,48.6537361]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"0.3",
+				"featureType":"Rocher en mer",
+				"nom":"Reier ar Har Vihan"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4238181,48.654392]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"0.7",
+				"featureType":"Rocher en mer",
+				"description":" N. Bodad-pileier bezineg en nord da 'Ormelog'.",
+				"nom":"Ar Pilou Du"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4347526,48.6615113]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"10.3",
+				"featureType":"îlot",
+				"nom":"Karreg Mari Go"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4169391,48.6589701]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"10.4",
+				"featureType":"îlot",
+				"nom":"Ar Gouelini"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.414298,48.662125]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"6.9",
+				"featureType":"îlot",
+				"nom":"Roc'h ar Roeioù"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4176067,48.6550688]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"6.3",
+				"featureType":"îlot",
+				"nom":"Roc'h Kola"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4211026,48.6584038]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"7.9",
+				"featureType":"îlot",
+				"nom":"Pil Sonn da Veaz"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4450365,48.6570724]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"10.3",
+				"featureType":"îlot",
+				"nom":"Pil Plad"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4432996,48.6571514]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"5.6",
+				"featureType":"îlot",
+				"nom":"Leguestenn Vihan"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4439086,48.6547668]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"6.0",
+				"featureType":"îlot",
+				"nom":"Ulvennoù Kreiz"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4500546,48.6588808]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"5.8",
+				"featureType":"îlot",
+				"nom":"Koz Stal Goz"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4119634,48.6551753]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"6.5",
+				"featureType":"îlot",
+				"nom":"Brellum Goz Vihan"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4302702,48.6559132]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"10.0",
+				"featureType":"îlot",
+				"description":" N. Beza ez eo ar peziad rohell a weler e-fas da 'Ar  Briellog', 250m alese etrezeg ar biz.  Klevet /Ire lym/ 4 gwech, /'brylym-/ 2, /be're lym-/ 2, /by'rylym-/ 1, tbrolym-/ 1 ha /byr'lelym-/ 1.  Kleved a reer ar ger-mell dirag gand lod, neuze 'Ar  Brellum Goz'. Red eo menegi en e bart e-unan an distagadur /bre've.lym-/ klevet teir gwech, gand daou  vezinaer hag eur vaouez koz bet eno o vezina gand he  gwaz. An 'e' a hell beza damhir gand bod. ",
+				"nom":"Brellum Goz",
+				"audio": "Brellum Goz.mp3"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4292558,48.6572389]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"6.8",
+				"featureType":"îlot",
+				"description":" N. Ema er walarn d'an hini 'goz'.  Evid an eilstummou gweled uhellohig e-barz notenn an    ano 'Brellum Goz'.  Pesketaerien Plougerne a ra 'Ar C'hi' /a'xi./ euz ar    garreg-man. ",
+				"nom":"Brellum"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4319417,48.65886]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"6.9",
+				"featureType":"îlot",
+				"nom":"Koz Stal Nevez"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4115711,48.6549362]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"8.69",
+				"featureType":"îlot",
+				"nom":"Roc'h Charlez"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4205225,48.658997]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"6.9",
+				"featureType":"îlot",
+				"nom":"Brestou"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4394007,48.6599776]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"8.3",
+				"featureType":"Rocher en mer",
+				"nom":"Ar Raé"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4381225,48.6590545]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"0.5",
+				"featureType":"Rocher en mer",
+				"nom":"Tonnoù Chep"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4153018,48.6605854]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"2.7",
+				"featureType":"Rocher en mer",
+				"nom":"Penn Toull al Lien"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4194446,48.6631155]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"7.1",
+				"featureType":"Rocher en mer",
+				"description":"N. Ano roet gand bezinaerien Kêrlouan d'ar garres zibrata a weler e penn gwalarn ar beg a gendalh 'Roh An Dour' er walarn. Pesketaerien euz Plougerne a ra 'Klosenn Ar Garreg Ront' /klosenar'ga-re(g)'rün/ anezi, peotramant, pa z eo anad, 'Ar Glosenn” /ar'glosen/ hepken. Beza ez eo eur merk pesketa dezo, war-dro 200m en he hornaouog da 'Ar Garreg Ront' ('Roh An Dour” evid bezinaerien Kérlouan). Kloumet e vez da hourlen ar reverdiou braz.",
+				"nom":"Ar Garreg"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4384883,48.6572685]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"8.9",
+				"featureType":"Rocher en mer",
+				"nom":"Karreg Sanig Varou"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4172836,48.658467]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"8.19",
+				"featureType":"Rocher en mer",
+				"nom":"An Ivern"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4113196,48.6562936]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"6.9",
+				"featureType":"Rocher en mer",
+				"nom":"Koz Stal Goz"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4122849,48.6557594]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"5.9",
+				"featureType":"Rocher en mer",
+				"nom":"Reier Porz Ili"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4146979,48.6552508]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"8.0",
+				"featureType":"Rocher en mer",
+				"description":"N. Karreg vraz a ziwall 'Porz An Tonnou' diouz an avel viz.An eil 'g' a zo distabil, dreist-oll er gaoz diwar-diz. ",
+				"nom":"Ar Garreg Wenn",
+				"audio": "Ar Garreg Wenn.mp3"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4333087,48.6570846]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"8.69",
+				"featureType":"îlot",
+				"nom":"Pil Sonn d'an Aod"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4451892,48.6553466]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"0.2",
+				"featureType":"Rocher en mer",
+				"nom":"Penn ar Marc'h"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4250705,48.6565956]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"2.8",
+				"featureType":"Rocher en mer",
+				"nom":"Mean Porz Laer"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4362008,48.6550102]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"5.09",
+				"featureType":"Rocher en mer",
+				"description":"N. Aodig-dréz er reter da 'Borz An Tonnou'. Dispennet eo tamm pe damm gand eun tourter, sanset. ",
+				"nom":"Korre Kignet"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4335431,48.6556865]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"9.0",
+				"featureType":"îlot",
+				"nom":"Mean Feizog"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4596328,48.6554105]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"5.2",
+				"featureType":"Rocher en mer",
+				"description":"N. Dihastet eo bet gand Fench (Yann Goz e dad) evid nétaad ar plas da lakaad e ganod. Edo ar roh-maii e-kreiz 'Porz An Tonnou'. Klevet ivez 'Karreg Fench Koz', ",
+				"nom":"Roc'h Fench Yann Goz"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.434733,48.6557188]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"12.5",
+				"featureType":"îlot",
+				"nom":"Leguestenn Vraz"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4459168,48.6547558]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"1.3",
+				"featureType":"Rocher en mer",
+				"nom":"Mean Pig Braz"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4639571,48.662717]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"1.7",
+				"featureType":"Rocher en mer",
+				"description":" N. E-touez an niver braz a bileier a zo etre 'Brellum  Goz' ha 'Toull Ar Briellog' eo hemaii an hini dibrata.  Ano bet gand bezinaerien. Gand pesketaerien on-eus klevet 'Brellum Goz Vian' threlym'goz'.vi.an/.",
+				"nom":"Ar Pil Kreiz"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4294378,48.6563142]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"4.8",
+				"featureType":"Rocher en mer",
+				"nom":"Ar Fourn"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4258511,48.6605974]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"4.4",
+				"featureType":"Rocher en mer",
+				"nom":"Kibell"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4228723,48.6606171]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"4.59",
+				"featureType":"Rocher en mer",
+				"nom":"Kiniveier Vraz"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4244871,48.6635118]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"2.6",
+				"featureType":"Rocher en mer",
+				"description":"N. Ema er biz da 'Roc'h Karre”. Gand pesketaerien euz Plougerne on-eus bet 'Karreg Al Laboused' /ka-regala'‘buset/ anezi, ha gwir eo e vez laboused eno. ",
+				"nom":"Roc'h Pell"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4360076,48.6649027]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"3.1",
+				"featureType":"Rocher en mer",
+				"nom":"Ar Roc'h War-laez ar Spernennoù"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4390417,48.6642306]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"3.6",
+				"featureType":"Rocher en mer",
+				"description":"N. Ez-kenañ da weled er biz-biz-nord da “Roc'h Kleuz', abalamour d'he stumm heverk. Bet an 'a' /a-/ kalz aliesoh eged /a-/. Eur wech 'Ar Roc'h Karre'/a rox'ka-re/. ",
+				"nom":"Roc'h Karre"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4366254,48.6628361]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"4.0",
+				"featureType":"Rocher en mer",
+				"description":"N. Ema er walarn da 'Ormelog”. Pe ivez 'Ar Roc'h C'hleuz' /aro%'lg-s/, ralloh avad. ",
+				"nom":"Roc'h Kleuz"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4381585,48.6617473]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"1.9",
+				"featureType":"Rocher en mer",
+				"description":" N. Ema e penn nord 'Brellum'.  Klevet evel-se 3 gwech hag /-an'i. go/ eur wech. ",
+				"nom":"Pil An Digo"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4336338,48.6607148]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"4.09",
+				"featureType":"Rocher en mer",
+				"description":" N. Pil ledan er walarn da 'Vrellum'.  Klevet an 'e' berr 4 gwech (neuze /e/), damhir 3  (neuze /e/). Er respontou war-don on-eus bet ar ger-mell   'an' a-wechou, med er gaoz dievez on-eus klevet traou  evel 'e-fas da Ormelog'...  An 'o' genta /o/ er peurliesa, /u/ 2 wech. ",
+				"nom":"Ormelog"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4355199,48.6605737]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"4.9",
+				"featureType":"Rocher en mer",
+				"description":"N. Ema war an tréz e-barz 'Porz An Tonnou , en tu dehou d'ar hal-simant pa ziskenner en aod. ",
+				"nom":"Roh An Tonnou",
+				"audio":"Roh An Tonnou.mp3"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4340123,48.6558056]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"3.5",
+				"featureType":"Rocher en mer",
+				"nom":"Govelig Vihan"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4467816,48.6589062]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"3.9",
+				"featureType":"Rocher en mer",
+				"nom":"Govelig Vraz"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4449503,48.6595974]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"4.8",
+				"featureType":"Rocher en mer",
+				"nom":"Pil Serz"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4481788,48.6598696]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"3.5",
+				"featureType":"Rocher en mer",
+				"nom":"Lochouarn"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4243549,48.6556436]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"5.9",
+				"featureType":"Rocher en mer",
+				"nom":"Rochounog Vraz"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4242993,48.6571728]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"13.9",
+				"featureType":"Rocher à terre",
+				"description":" N. Roh ront, war-vord an tevenn, e penn reter 'Korre Kignet' An ‘e' berr 5 gwech (neuze al “ll” à hell beza /l-/, damhir 3. ",
+				"nom":"Ar Briellog"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4315894,48.6557159]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"2.5",
+				"featureType":"Rocher en mer",
+				"nom":"Rochounog Vihan"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4254587,48.658555]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"12.8",
+				"featureType":"Rocher à terre",
+				"nom":"Roc'h an Dour"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4373868,48.6565732]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"6.2",
+				"featureType":"Rocher à terre",
+				"nom":"Merouioù"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4171577,48.6549002]}
+		},
+		{
+			"type":"Feature",
+			"properties":{
+				"altitude":"11.5",
+				"featureType":"Rocher à terre",
+				"nom":"Mean Sonn"
+			},
+
+			"geometry":{"type":"Point","coordinates":[-4.4360688,48.6540961]}
+		}
+	]
+	}
