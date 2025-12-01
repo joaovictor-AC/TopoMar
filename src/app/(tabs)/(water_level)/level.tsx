@@ -4,6 +4,7 @@ import { ENABLE_TEST_MODE } from "@/config/testMode";
 import { Feature } from "@/types/locationTypes";
 import * as FileSystem from "expo-file-system/legacy";
 import { useLocalSearchParams } from "expo-router";
+import * as Speech from "expo-speech";
 import React, { useCallback, useEffect, useState } from "react";
 import {
     Alert,
@@ -65,6 +66,22 @@ export default function WaterLevelScreen() {
     
     // Distance threshold for "nearby" items (in meters)
     const NEARBY_DISTANCE = 500;
+
+    // Function to pronounce rock name using Text-to-Speech
+    const pronounceRockName = async (name: string) => {
+        try {
+            // Stop any current speech
+            await Speech.stop();
+            // Speak the rock name in French (best for Breton names)
+            await Speech.speak(name, {
+                language: 'fr-FR', // French language for better pronunciation
+                pitch: 1.0,
+                rate: 0.85, // Slightly slower for clarity
+            });
+        } catch (error) {
+            console.error('Error with speech:', error);
+        }
+    };
 
     // Load saved data when the component mounts
     useEffect(() => {
@@ -496,7 +513,15 @@ export default function WaterLevelScreen() {
                             ]}
                         >
                             <View style={styles.row}>
-                                <Text style={styles.name}>{name}</Text>
+                                <View style={styles.nameContainer}>
+                                    <Text style={styles.name}>{name}</Text>
+                                    <TouchableOpacity 
+                                        style={styles.speakerButton}
+                                        onPress={() => pronounceRockName(name)}
+                                    >
+                                        <Text style={styles.speakerIcon}>🔊</Text>
+                                    </TouchableOpacity>
+                                </View>
                                 {hasAltitudeData ? (
                                     <View style={[
                                         styles.visibilityBadge,
@@ -865,11 +890,33 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         marginBottom: 12,
     },
+    nameContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        flex: 1,
+        gap: 8,
+    },
     name: { 
         fontSize: 18, 
         fontWeight: "700", 
         flex: 1,
         color: "#1a1a1a",
+    },
+    speakerButton: {
+        backgroundColor: "#2196f3",
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        justifyContent: "center",
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        shadowOffset: { width: 0, height: 2 },
+        elevation: 3,
+    },
+    speakerIcon: {
+        fontSize: 18,
     },
     visibilityBadge: {
         paddingHorizontal: 12,

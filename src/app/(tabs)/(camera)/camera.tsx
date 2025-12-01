@@ -7,8 +7,9 @@ import { Coordinates } from "@/types/locationTypes";
 import { calculateBearing, calculateDistance } from "@/utils/calcLocation";
 import { CameraView } from "expo-camera";
 import { useRouter } from "expo-router";
-import { useMemo } from "react";
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import * as Speech from "expo-speech";
+import { useMemo, useState } from "react";
+import { Alert, Dimensions, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 // Constants for AR marker visibility and placement
 const ANGLE_VIEW = 80; // Field of view angle for marker display
@@ -29,6 +30,47 @@ export default function CameraScreen() {
     const heading = useOrientation();
     const pitch = useDevicePitch();
     const router = useRouter();
+    
+    // State for modal
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedRock, setSelectedRock] = useState<{
+        name: string;
+        lat: number;
+        lon: number;
+    } | null>(null);
+
+    // Function to pronounce rock name using Text-to-Speech
+    const pronounceRockName = async (name: string) => {
+        try {
+            // Stop any current speech
+            await Speech.stop();
+            // Speak the rock name in French (best for Breton names)
+            await Speech.speak(name, {
+                language: 'fr-FR', // French language for better pronunciation
+                pitch: 1.0,
+                rate: 0.85, // Slightly slower for clarity
+            });
+        } catch (error) {
+            console.error('Error with speech:', error);
+        }
+    };
+    
+    // Function to navigate to water level screen
+    const navigateToWaterLevel = () => {
+        if (!selectedRock || !location) return;
+        
+        setModalVisible(false);
+        router.push({
+            pathname: '/(tabs)/(water_level)/level',
+            params: {
+                rockName: selectedRock.name,
+                rockLat: selectedRock.lat,
+                rockLon: selectedRock.lon,
+                userLat: location.coords.latitude,
+                userLon: location.coords.longitude,
+            }
+        });
+    };
 
     // Variables to hold distance and bearing to a reference point
     let distance: number | null = null;
@@ -111,17 +153,13 @@ export default function CameraScreen() {
                         key={feature.properties.nom}
                         style={[styles.marker, { left: screenX, top: '50%' }, dynamicStyle]}
                         onPress={() => {
-                            // Navigate to water level screen with rock name and current location
-                            router.push({
-                                pathname: '/(tabs)/(water_level)/level',
-                                params: {
-                                    rockName: feature.properties.nom,
-                                    rockLat: coords[1],
-                                    rockLon: coords[0],
-                                    userLat: location.coords.latitude,
-                                    userLon: location.coords.longitude,
-                                }
+                            // Open modal with options
+                            setSelectedRock({
+                                name: feature.properties.nom,
+                                lat: coords[1],
+                                lon: coords[0],
                             });
+                            setModalVisible(true);
                         }}
                     >
                         <Text style={styles.markerText}>{feature.properties.nom}</Text>
@@ -178,6 +216,72 @@ export default function CameraScreen() {
                     )}
                 </View>
             </View>
+            
+            {/* Modal with options */}
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <TouchableOpacity 
+                    style={styles.modalOverlay}
+                    activeOpacity={1}
+                    onPress={() => setModalVisible(false)}
+                >
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalContent}>
+                            {/* Rock name title with water level icon */}
+                            <View style={styles.modalHeader}>
+                                <Text style={styles.modalTitle}>{selectedRock?.name}</Text>
+                                <TouchableOpacity
+                                    style={styles.waterLevelIconButton}
+                                    onPress={navigateToWaterLevel}
+                                >
+                                    <Text style={styles.waterLevelIcon}>📊</Text>
+                                </TouchableOpacity>
+                            </View>
+                            
+                            {/* Divider */}
+                            <View style={styles.modalDivider} />
+                            
+                            {/* Pronunciation button */}
+                            <TouchableOpacity
+                                style={styles.modalButton}
+                                onPress={() => {
+                                    if (selectedRock) {
+                                        pronounceRockName(selectedRock.name);
+                                    }
+                                }}
+                            >
+                                <Text style={styles.modalButtonIcon}>🔊</Text>
+                                <Text style={styles.modalButtonText}>Pronounce</Text>
+                            </TouchableOpacity>
+                            
+                            {/* Description button (placeholder for future) */}
+                            <TouchableOpacity
+                                style={[styles.modalButton, styles.modalButtonSecondary]}
+                                onPress={() => {
+                                    // TODO: Navigate to description screen
+                                    setModalVisible(false);
+                                    Alert.alert('Coming Soon', 'Rock description feature will be available soon!');
+                                }}
+                            >
+                                <Text style={styles.modalButtonIcon}>📝</Text>
+                                <Text style={styles.modalButtonText}>Description</Text>
+                            </TouchableOpacity>
+                            
+                            {/* Close button */}
+                            <TouchableOpacity
+                                style={styles.modalCloseButton}
+                                onPress={() => setModalVisible(false)}
+                            >
+                                <Text style={styles.modalCloseText}>Close</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </TouchableOpacity>
+            </Modal>
         </>
     );
 };
@@ -230,5 +334,97 @@ const styles = StyleSheet.create({
         color: '#FFF',
         fontSize: 12,
         marginTop: 2,
+    },
+    // Modal styles
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContainer: {
+        width: '85%',
+        maxWidth: 400,
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 24,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+        elevation: 10,
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 8,
+    },
+    modalTitle: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#1a1a1a',
+        flex: 1,
+    },
+    waterLevelIconButton: {
+        backgroundColor: '#f0f0f0',
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginLeft: 12,
+    },
+    waterLevelIcon: {
+        fontSize: 20,
+    },
+    modalDivider: {
+        height: 1,
+        backgroundColor: '#e0e0e0',
+        marginVertical: 16,
+    },
+    modalButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#2196f3',
+        padding: 16,
+        borderRadius: 12,
+        marginBottom: 12,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.15,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    modalButtonSecondary: {
+        backgroundColor: '#ff9800',
+    },
+    modalButtonIcon: {
+        fontSize: 24,
+        marginRight: 12,
+    },
+    modalButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: '600',
+        flex: 1,
+    },
+    modalCloseButton: {
+        marginTop: 8,
+        padding: 12,
+        alignItems: 'center',
+    },
+    modalCloseText: {
+        color: '#666',
+        fontSize: 16,
+        fontWeight: '500',
     },
 });
