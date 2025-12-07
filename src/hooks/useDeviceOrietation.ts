@@ -1,6 +1,7 @@
 import * as Location from "expo-location";
-import { DeviceMotion } from "expo-sensors";
+import { DeviceMotion, Magnetometer } from "expo-sensors";
 import { useEffect, useState } from "react";
+import { Platform } from "react-native";
 
 /**
  * Get the device pitch (tilt) in degrees using motion sensors.
@@ -44,54 +45,50 @@ export const useDevicePitch = () => {
 
 /**
  * Custom hook to get the device heading (compass direction).
- * Applies smoothing to the heading values.
+ * Uses Location API for iOS and Magnetometer for Android.
  * @returns {number} heading in degrees
- * @see {@link https://docs.expo.dev/versions/latest/sdk/location/| Expo Location} for more details.
  */
-
 export const useOrientation = (): number => {
-  const [heading, setHeading] = useState(0); // Initial heading value
-  const [errorMsg, setErrorMsg] = useState<string | null>(null); // Error message
+  const [heading, setHeading] = useState(0);
 
   useEffect(() => {
-    // Variable to hold the location subscription object
-    let subscription: Location.LocationSubscription | null = null;
+    let subscription: any = null;
 
-    /**
-     * Starts tracking the device orientation.
-     * Requests permission and listens for heading changes.
-     */
-    const startLocationTracking = async () => {
-      // Request foreground location permissions from the user
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
-
-      // Start listening for heading (compass) changes
-      subscription = await Location.watchHeadingAsync((headingData) => {
-        if (
-          typeof headingData.trueHeading == "number" &&
-          headingData.trueHeading >= 0
-        ) {
-          const newHeading = headingData.trueHeading;
-          setHeading((prevHeading) => {
-            // If the difference is too large, update directly
-            if (Math.abs(newHeading - prevHeading) > 180) {
-              return newHeading;
+    const startTracking = async () => {
+      if (Platform.OS === 'ios') {
+        // iOS: usar Location API (más preciso)
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status === "granted") {
+          subscription = await Location.watchHeadingAsync((headingData) => {
+            if (typeof headingData.trueHeading === "number" && headingData.trueHeading >= 0) {
+              setHeading(headingData.trueHeading);
             }
-
-            // Smooth the heading transition
-            return prevHeading * (1 - 0.2) + newHeading * 0.2;
           });
         }
-      });
+      } else {
+        // Android: usar Magnetometer directamente
+        const { status } = await Magnetometer.requestPermissionsAsync();
+        if (status === "granted") {
+          Magnetometer.setUpdateInterval(100);
+          
+          subscription = Magnetometer.addListener((data) => {
+            // Calcular el ángulo del magnetómetro
+            let angle = Math.atan2(data.y, data.x) * (180 / Math.PI);
+            
+            // Normalizar a 0-360
+            angle = (angle + 360) % 360;
+            
+            // En Android, ajustar para que 0° sea Norte
+            const heading = (360 - angle) % 360;
+            
+            setHeading(heading);
+          });
+        }
+      }
     };
 
-    startLocationTracking();
+    startTracking();
 
-    // Remove listener when component unmounts
     return () => {
       subscription?.remove();
     };

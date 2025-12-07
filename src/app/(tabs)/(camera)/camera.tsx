@@ -1,6 +1,6 @@
 import geoJsonData from '@/assets/geodata/IMT_EntitesRemarquables.json';
 import FeatureModal from '@/components/FeatureModal';
-import { FOV_MARGIN, HEADING_OFFSET, HORIZONTAL_FOV, HYSTERESIS_DEG, MAX_DEPTH_METERS, MAX_DISTANCE, MIN_DISTANCE, SMOOTHING_ALPHA_HEADING, SMOOTHING_ALPHA_PITCH, VIS_STICK_MS } from '@/constants/camera_settings';
+import { FOV_MARGIN, HEADING_DEADZONE, HEADING_OFFSET, HORIZONTAL_FOV, HYSTERESIS_DEG, MAX_DEPTH_METERS, MAX_DISTANCE, MIN_DISTANCE, PITCH_DEADZONE, SMOOTHING_ALPHA_HEADING, SMOOTHING_ALPHA_PITCH, VIS_STICK_MS } from '@/constants/camera_settings';
 import { HEIGHT_SCREEN, WIDTH_SCREEN } from '@/constants/phone_dimensions';
 import { useDataPersistence } from '@/hooks/useDataPersistence';
 import { useDevicePitch, useOrientation } from '@/hooks/useDeviceOrietation';
@@ -27,6 +27,12 @@ export default function CameraScreen() {
       let delta = deviceHeading - prev;
       if (delta > 180) delta -= 360;
       if (delta < -180) delta += 360;
+      
+      // Zona muerta: ignorar cambios pequeños para más estabilidad
+      if (Math.abs(delta) < HEADING_DEADZONE) {
+        return prev;
+      }
+      
       const newHeading = (prev + SMOOTHING_ALPHA_HEADING * delta + 360) % 360;
       prevHeadingRef.current = newHeading;
       return newHeading;
@@ -36,9 +42,16 @@ export default function CameraScreen() {
   // Lissage du pitch (ADDED)
   const [smoothedPitch, setSmoothedPitch] = useState(rawPitch);
   useEffect(() => {
-    setSmoothedPitch(prev =>
-      prev + SMOOTHING_ALPHA_PITCH * (rawPitch - prev)
-    );
+    setSmoothedPitch(prev => {
+      const delta = rawPitch - prev;
+      
+      // Zona muerta: ignorar cambios pequeños para más estabilidad
+      if (Math.abs(delta) < PITCH_DEADZONE) {
+        return prev;
+      }
+      
+      return prev + SMOOTHING_ALPHA_PITCH * delta;
+    });
   }, [rawPitch]);
 
   // Appliquer un éventuel décalage fixe 
@@ -102,8 +115,9 @@ export default function CameraScreen() {
       const alt1 = parseFloat(feature?.properties?.altitude || '0');
       const { isVisible: isVisibleByHeight } = calculateVisibility(alt1, seaLevelValue, deltaValue);
 
+      // COMENTADO: Mostrar todas las rocas independientemente del nivel del mar
       // Se a rocha for considerada visível pelo cálculo (ou seja, não submersa), não mostrar o card
-      if (isVisibleByHeight) return;
+      // if (isVisibleByHeight) return;
 
       // Filtrer par distance
       if (distance < MIN_DISTANCE || distance > MAX_DISTANCE) return;
@@ -135,16 +149,13 @@ export default function CameraScreen() {
       // si visible, on met à jour le timestamp (sert à la “grâce”)
       lastVisibleRef.current[name] = now;
 
-      // ==================== VISIBILITÉ VERTICALE AMÉLIORÉE ====================
-      // Calcul de l'angle vertical attendu basé sur la distance
-      // Plus le rocher est loin, plus il devrait apparaître vers l'horizon
-      const expectedVerticalAngle = Math.atan2(0, distance) * (180 / Math.PI); // ≈0° pour horizon
-      const verticalTolerance = 20; // ±20° de tolérance
-
-      const pitchDifference = Math.abs(-pitch - expectedVerticalAngle);
-      const isVertOK = pitchDifference < verticalTolerance;
-
-      if (!isVertOK) return;
+      // ==================== VISIBILITÉ VERTICALE ====================
+      // TEMPORAL: Desactivar filtro vertical para ver todas las rocas
+      // const expectedVerticalAngle = Math.atan2(0, distance) * (180 / Math.PI);
+      // const verticalTolerance = 60; // Tolerancia muy amplia
+      // const pitchDifference = Math.abs(-pitch - expectedVerticalAngle);
+      // const isVertOK = pitchDifference < verticalTolerance;
+      // if (!isVertOK) return;
 
       // ==================== PROJECTION HORIZONTALE (X) ====================
       const halfFovRad = (HORIZONTAL_FOV / 2) * Math.PI / 180;
