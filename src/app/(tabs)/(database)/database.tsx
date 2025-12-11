@@ -18,6 +18,8 @@ export default function DatabaseScreen() {
         setFeatures,
         setDelta,
         setMaxDistance,
+        setDeltaReference,
+        setMaxDistanceReference,
         saveData,
         resetData
     } = useDataPersistence(geojson);
@@ -50,10 +52,12 @@ export default function DatabaseScreen() {
                 
                 if (json.deltaReference) {
                     setDelta(String(json.deltaReference));
+                    setDeltaReference(String(json.deltaReference));
                 }
                 
                 if (json.maxDistanceReference) {
                     setMaxDistance(String(json.maxDistanceReference));
+                    setMaxDistanceReference(String(json.maxDistanceReference));
                 }
                 
                 Alert.alert("Success", "JSON loaded! Please click 'Save Changes' to persist this data.");
@@ -75,11 +79,29 @@ export default function DatabaseScreen() {
 
                 <View style={cardStyle.seaLevelCard}>
                     <Text style={cardStyle.seaLevelLabel}>Current Data Status</Text>
-                    <View style={{ marginTop: 10, gap: 5 }}>
-                        <Text style={textStyle.filterText}>• Features count: {features.length}</Text>
-                        <Text style={textStyle.filterText}>• Sea Level: {seaLevel}</Text>
-                        <Text style={textStyle.filterText}>• Delta: {delta}</Text>
-                        <Text style={textStyle.filterText}>• Max Distance: {maxDistance}</Text>
+                    <View style={{ marginTop: 10, gap: 5, marginBottom: 15 }}>
+                        <Text style={textStyle.filterText}>• Total Features: {features.length}</Text>
+                    </View>
+
+                    <Text style={[cardStyle.seaLevelLabel, { fontSize: 16, marginBottom: 10 }]}>Features List</Text>
+                    <View style={{ maxHeight: 300, backgroundColor: 'rgba(0,0,0,0.05)', borderRadius: 8, borderWidth: 1, borderColor: 'rgba(0,0,0,0.1)' }}>
+                        <ScrollView nestedScrollEnabled style={{ padding: 5 }}>
+                            {features.map((item, index) => (
+                                <View key={index} style={{ 
+                                    flexDirection: 'row', 
+                                    paddingVertical: 8, 
+                                    paddingHorizontal: 5,
+                                    borderBottomWidth: index === features.length - 1 ? 0 : 1, 
+                                    borderBottomColor: 'rgba(0,0,0,0.1)',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                                }}>
+                                    <Text style={[textStyle.filterText, { flex: 2, fontSize: 14 }]} numberOfLines={1}>
+                                        {index + 1}. {item.properties.nom || 'Unnamed'}
+                                    </Text>
+                                </View>
+                            ))}
+                        </ScrollView>
                     </View>
                 </View>
 

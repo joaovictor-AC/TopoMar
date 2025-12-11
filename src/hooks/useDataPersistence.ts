@@ -36,6 +36,10 @@ export const useDataPersistence = (geojson: FeatureCollection) => {
     // State for max distance
     const [maxDistance, setMaxDistance] = useState<string>(geojson.maxDistanceReference || "1000");
 
+    // State for references (to support resetting to imported defaults)
+    const [deltaReference, setDeltaReference] = useState<string>(geojson.deltaReference || "4.5");
+    const [maxDistanceReference, setMaxDistanceReference] = useState<string>(geojson.maxDistanceReference || "1000");
+
     // Load saved data when the screen comes into focus
     useFocusEffect(
         useCallback(() => {
@@ -58,6 +62,13 @@ export const useDataPersistence = (geojson: FeatureCollection) => {
                         if (savedData.maxDistance !== undefined) {
                             setMaxDistance(String(savedData.maxDistance));
                         }
+                        // Load references if they exist
+                        if (savedData.deltaReference !== undefined) {
+                            setDeltaReference(String(savedData.deltaReference));
+                        }
+                        if (savedData.maxDistanceReference !== undefined) {
+                            setMaxDistanceReference(String(savedData.maxDistanceReference));
+                        }
                     }
                 } catch (e) {
                     console.error("Failed to load data from file system", e);
@@ -78,7 +89,9 @@ export const useDataPersistence = (geojson: FeatureCollection) => {
             features,
             seaLevel: parseFloat(seaLevel.replace(',', '.')) || 0,
             delta: parseFloat(delta.replace(',', '.')) || 0,
-            maxDistance: parseFloat(maxDistance.replace(',', '.')) || 0
+            maxDistance: parseFloat(maxDistance.replace(',', '.')) || 0,
+            deltaReference: parseFloat(deltaReference.replace(',', '.')) || 0,
+            maxDistanceReference: parseFloat(maxDistanceReference.replace(',', '.')) || 0
         };
         try {
             const jsonValue = JSON.stringify(out);
@@ -89,26 +102,38 @@ export const useDataPersistence = (geojson: FeatureCollection) => {
             console.error("Failed to save data", e);
             Alert.alert("Error", "Unable to save changes.");
         }
-    }, [features, seaLevel, delta, maxDistance]);
+    }, [features, seaLevel, delta, maxDistance, deltaReference, maxDistanceReference]);
 
     // Function to reset data to default
     const resetData = useCallback(async () => {
         Alert.alert(
             "Reset",
-            "Do you really want to delete the saved file and revert to default data?",
+            "Do you want to reset values to defaults?",
             [
-                { text: "Cancel", style: "cancel" },
+                { text: "No", style: "cancel" },
                 {
-                    text: "Reset",
-                    style: "destructive",
+                    text: "Yes",
                     onPress: async () => {
                         try {
-                            await FileSystem.deleteAsync(FILE_URI, { idempotent: true });
-                            setFeatures(initial); // Reset to the initial map
+                            // Reset state to references
                             setSeaLevel("8.0");
-                            setDelta(geojson.deltaReference || "4.5");
-                            setMaxDistance(geojson.maxDistanceReference || "1000");
-                            Alert.alert("Reset", "Data has been reset.");
+                            setDelta(deltaReference);
+                            setMaxDistance(maxDistanceReference);
+                            
+                            // Save immediately with reset values
+                            const out = { 
+                                ...(geojson as any), 
+                                features,
+                                seaLevel: 8.0,
+                                delta: parseFloat(deltaReference.replace(',', '.')) || 0,
+                                maxDistance: parseFloat(maxDistanceReference.replace(',', '.')) || 0,
+                                deltaReference: parseFloat(deltaReference.replace(',', '.')) || 0,
+                                maxDistanceReference: parseFloat(maxDistanceReference.replace(',', '.')) || 0
+                            };
+                            const jsonValue = JSON.stringify(out);
+                            await FileSystem.writeAsStringAsync(FILE_URI, jsonValue);
+
+                            Alert.alert("Reset", "Values have been reset to defaults.");
                         } catch (e) {
                             console.error("Failed to reset data", e);
                             Alert.alert("Error", "Unable to reset data.");
@@ -117,7 +142,7 @@ export const useDataPersistence = (geojson: FeatureCollection) => {
                 },
             ]
         );
-    }, [initial]);
+    }, [initial, deltaReference, maxDistanceReference, features]);
 
     // Return all the state and functions the component needs
     return {
@@ -129,6 +154,8 @@ export const useDataPersistence = (geojson: FeatureCollection) => {
         setDelta,
         maxDistance,
         setMaxDistance,
+        setDeltaReference,
+        setMaxDistanceReference,
         isLoading,
         saveData, 
         resetData

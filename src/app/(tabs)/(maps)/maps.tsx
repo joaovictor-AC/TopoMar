@@ -1,5 +1,6 @@
 import geojson from "@/assets/geodata/kerlouan.json";
 import FeatureModal from '@/components/FeatureModal';
+import LoadingScreen from "@/components/loadingScreen";
 import ReturnButton from '@/components/ReturnButton';
 import { SUBMERGED, VISIBLE } from "@/constants/colors";
 import { INITIAL_REGION } from "@/constants/maps_region";
@@ -17,9 +18,21 @@ export default function MapsScreen() {
     const [modalVisible, setModalVisible] = useState(false);
 
     // Read persisted sea level and delta so modal shows real visibility
-    const { features, seaLevel, delta } = useDataPersistence(geojson);
+    const { features, seaLevel, delta, isLoading } = useDataPersistence(geojson);
     const seaLevelValue = parseFloat(String(seaLevel).replace(',', '.')) || 0;
     const deltaValue = parseFloat(String(delta).replace(',', '.')) || 0;
+
+    if (isLoading) {
+        return <LoadingScreen />;
+    }
+
+    const firstFeature = features[0];
+    const initialRegion = firstFeature ? {
+        latitude: firstFeature.geometry.coordinates[1],
+        longitude: firstFeature.geometry.coordinates[0],
+        latitudeDelta: INITIAL_REGION.latitudeDelta,
+        longitudeDelta: INITIAL_REGION.longitudeDelta,
+    } : INITIAL_REGION;
 
     // modal visibility and selectedFeature handled below via FeatureModal
 
@@ -29,9 +42,10 @@ export default function MapsScreen() {
 
             {/* MapView: provider set to Google, starts at initialRegion and shows device location */}
             <MapView
+                key={firstFeature ? `${firstFeature.geometry.coordinates[0]}-${firstFeature.geometry.coordinates[1]}` : 'default'}
                 style={screenStyle.background}
                 provider={PROVIDER_GOOGLE}
-                initialRegion={INITIAL_REGION}
+                initialRegion={initialRegion}
                 showsUserLocation={true} // show blue dot for user's current position (requires permissions)
             >
                 {/* Render a Marker for each GeoJSON feature */}

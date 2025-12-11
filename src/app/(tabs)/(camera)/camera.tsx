@@ -1,4 +1,4 @@
-import geoJsonData from '@/assets/geodata/IMT_EntitesRemarquables.json';
+import geoJsonData from '@/assets/geodata/kerlouan.json';
 import FeatureModal from '@/components/FeatureModal';
 import ReturnButton from '@/components/ReturnButton';
 import { FOV_MARGIN, HEADING_DEADZONE, HEADING_OFFSET, HORIZONTAL_FOV, HYSTERESIS_DEG, MAX_DEPTH_METERS, MAX_DISTANCE, MIN_DISTANCE, PITCH_DEADZONE, SMOOTHING_ALPHA_HEADING, SMOOTHING_ALPHA_PITCH, VIS_STICK_MS } from '@/constants/camera_settings';
@@ -13,7 +13,7 @@ import { calculateVisibility } from '@/utils/calcHeight';
 import { calculateBearing, calculateDistance } from '@/utils/calcLocation';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function CameraScreen() {
   const { location, errorMsg } = useLocation();
@@ -125,7 +125,7 @@ export default function CameraScreen() {
       if (distance < MIN_DISTANCE) return;
 
       // If the rock is submerged AND farther than maxDistance, don't show it
-      if (!isVisibleByHeight && distance > maxDistanceValue) return;
+      if (!isVisibleByHeight || distance > maxDistanceValue) return;
 
       // --- visibilité H ---
       let angleDifference = targetBearing - heading; // heading = lissé + offset
@@ -297,6 +297,8 @@ export default function CameraScreen() {
           setSelectedFeature(null);
         }}
       />
+
+      <StatusBar hidden={true} />
     </View>
   );
 }
