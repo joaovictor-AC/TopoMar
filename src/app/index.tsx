@@ -4,7 +4,7 @@ import { iconStyle } from "@/style/icon/icon_style";
 import { screenStyle } from "@/style/screen/screen_style";
 import Feather from '@expo/vector-icons/Feather';
 import { useRouter } from "expo-router";
-import { Image, ImageBackground, TouchableOpacity, View } from "react-native";
+import { Image, ImageBackground, StatusBar, TouchableOpacity, View } from "react-native";
 
 // --- Assets ---
 // Load all required images locally. 'require' ensures they are bundled with the app.
@@ -78,7 +78,9 @@ export default function Index() {
             <Feather name="database" size={72} color="black" />
           </TouchableOpacity>
         </View>
+      <StatusBar hidden={true} />
       </View>
     </ImageBackground>
+
   );
 }
