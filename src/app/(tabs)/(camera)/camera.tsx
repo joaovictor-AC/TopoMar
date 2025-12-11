@@ -1,5 +1,6 @@
 import geoJsonData from '@/assets/geodata/IMT_EntitesRemarquables.json';
 import FeatureModal from '@/components/FeatureModal';
+import ReturnButton from '@/components/ReturnButton';
 import { FOV_MARGIN, HEADING_DEADZONE, HEADING_OFFSET, HORIZONTAL_FOV, HYSTERESIS_DEG, MAX_DEPTH_METERS, MAX_DISTANCE, MIN_DISTANCE, PITCH_DEADZONE, SMOOTHING_ALPHA_HEADING, SMOOTHING_ALPHA_PITCH, VIS_STICK_MS } from '@/constants/camera_settings';
 import { HEIGHT_SCREEN, WIDTH_SCREEN } from '@/constants/phone_dimensions';
 import { useDataPersistence } from '@/hooks/useDataPersistence';
@@ -27,12 +28,12 @@ export default function CameraScreen() {
       let delta = deviceHeading - prev;
       if (delta > 180) delta -= 360;
       if (delta < -180) delta += 360;
-      
+
       // Zona muerta: ignorar cambios pequeños para más estabilidad
       if (Math.abs(delta) < HEADING_DEADZONE) {
         return prev;
       }
-      
+
       const newHeading = (prev + SMOOTHING_ALPHA_HEADING * delta + 360) % 360;
       prevHeadingRef.current = newHeading;
       return newHeading;
@@ -44,12 +45,12 @@ export default function CameraScreen() {
   useEffect(() => {
     setSmoothedPitch(prev => {
       const delta = rawPitch - prev;
-      
+
       // Zona muerta: ignorar cambios pequeños para más estabilidad
       if (Math.abs(delta) < PITCH_DEADZONE) {
         return prev;
       }
-      
+
       return prev + SMOOTHING_ALPHA_PITCH * delta;
     });
   }, [rawPitch]);
@@ -66,9 +67,10 @@ export default function CameraScreen() {
   const [modalVisible, setModalVisible] = useState(false);
 
   // Read persisted sea level and delta so visibility reflects saved values
-  const { features: persistedFeatures, seaLevel, delta } = useDataPersistence(geoJsonData as any);
+  const { features: persistedFeatures, seaLevel, delta, maxDistance } = useDataPersistence(geoJsonData as any);
   const seaLevelValue = parseFloat(String(seaLevel).replace(',', '.')) || 0;
   const deltaValue = parseFloat(String(delta).replace(',', '.')) || 0;
+  const maxDistanceValue = parseFloat(String(maxDistance).replace(',', '.')) || MAX_DISTANCE;
 
   // For the selected feature (e.g., when tapping a marker) compute current visibility
   const selectedVisibility = selectedFeature
@@ -79,11 +81,11 @@ export default function CameraScreen() {
     })()
     : null;
 
-  useEffect(() => {                                              // ADDED
+  useEffect(() => {                                              
     if (permission && !permission.granted) {
       requestPermission();
     }
-  }, [permission]);                                              // ADDED
+  }, [permission]);
 
   //Mémorise le dernier instant où un POI a été visible
   const lastVisibleRef = useRef<Record<string, number>>({});
@@ -120,7 +122,10 @@ export default function CameraScreen() {
       // if (isVisibleByHeight) return;
 
       // Filtrer par distance
-      if (distance < MIN_DISTANCE || distance > MAX_DISTANCE) return;
+      if (distance < MIN_DISTANCE) return;
+
+      // If the rock is submerged AND farther than maxDistance, don't show it
+      if (!isVisibleByHeight && distance > maxDistanceValue) return;
 
       // --- visibilité H ---
       let angleDifference = targetBearing - heading; // heading = lissé + offset
@@ -278,6 +283,9 @@ export default function CameraScreen() {
           </Text>
         )}
       </View>
+
+      <ReturnButton />
+
       {/* Modal detalhado para o marcador selecionado (reutilizável) */}
       <FeatureModal
         visible={modalVisible}

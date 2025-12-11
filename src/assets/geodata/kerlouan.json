@@ -1,6 +1,7 @@
 {
 	"type":"FeatureCollection",
 	"deltaReference" : "4.5",
+	"maxDistanceReference" : "1000",
 	"features":[
 		{
 			"type":"Feature",

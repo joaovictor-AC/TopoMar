@@ -2,6 +2,7 @@
 import { buttonStyle } from "@/style/button/button_style";
 import { iconStyle } from "@/style/icon/icon_style";
 import { screenStyle } from "@/style/screen/screen_style";
+import Feather from '@expo/vector-icons/Feather';
 import { useRouter } from "expo-router";
 import { Image, ImageBackground, TouchableOpacity, View } from "react-native";
 
@@ -28,14 +29,14 @@ export default function Index() {
     >
       <View style={screenStyle.container}>
         <View style={buttonStyle.buttonContainer}>
-          
+
           {/* Map Navigation Button */}
-          <TouchableOpacity 
+          <TouchableOpacity
             style={buttonStyle.ellipseButton}
             onPress={() => router.push("/maps")} // Navigate to the /maps screen on press
             activeOpacity={0.7}
           >
-            <Image 
+            <Image
               source={MAP_PIN_ICON}
               style={iconStyle.icon}
               resizeMode="contain"
@@ -43,12 +44,12 @@ export default function Index() {
           </TouchableOpacity>
 
           {/* Camera Navigation Button */}
-          <TouchableOpacity 
+          <TouchableOpacity
             style={buttonStyle.ellipseButton}
             onPress={() => router.push("/camera")} // Navigate to the /camera screen on press
             activeOpacity={0.7}
           >
-            <Image 
+            <Image
               source={CAMERA_ICON}
               style={iconStyle.icon}
               resizeMode="contain"
@@ -56,16 +57,25 @@ export default function Index() {
           </TouchableOpacity>
 
           {/* Water Level Navigation Button */}
-          <TouchableOpacity 
+          <TouchableOpacity
             style={buttonStyle.ellipseButton}
             onPress={() => router.push("/level")} // Navigate to the /level screen on press
             activeOpacity={0.7}
           >
-            <Image 
+            <Image
               source={WAVES_ICON}
               style={iconStyle.icon}
               resizeMode="contain"
             />
+          </TouchableOpacity>
+
+          {/* Change GeoJson data Button */}
+          <TouchableOpacity
+            style={buttonStyle.ellipseButton}
+            onPress={() => router.push("/database")}
+            activeOpacity={0.7}
+          >
+            <Feather name="database" size={72} color="black" />
           </TouchableOpacity>
         </View>
       </View>

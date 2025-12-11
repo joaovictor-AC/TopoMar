@@ -21,6 +21,7 @@ export type Feature= {
 
 export type FeatureCollection = {
   type: string;
-  features: Feature[];
   deltaReference?: string;
+  maxDistanceReference?: string;
+  features: Feature[];
 }

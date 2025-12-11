@@ -2,7 +2,8 @@
 
 import { Feature, FeatureCollection } from "@/types/locationTypes";
 import * as FileSystem from "expo-file-system/legacy";
-import { useCallback, useEffect, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import { Alert } from "react-native";
 
 /**
@@ -32,35 +33,43 @@ export const useDataPersistence = (geojson: FeatureCollection) => {
     // State for delta
     const [delta, setDelta] = useState<string>(geojson.deltaReference || "4.5");
 
-    // Load saved data when the hook is first used
-    useEffect(() => {
-        const loadData = async () => {
-            try {
-                const fileInfo = await FileSystem.getInfoAsync(FILE_URI);
-                if (fileInfo.exists) {
-                    const fileContents = await FileSystem.readAsStringAsync(FILE_URI);
-                    const savedData = JSON.parse(fileContents);
-                    
-                    if (savedData.features) {
-                        setFeatures(savedData.features as Feature[]);
-                    }
-                    if (savedData.seaLevel !== undefined) {
-                        setSeaLevel(String(savedData.seaLevel));
-                    }
-                    if (savedData.delta !== undefined) {
-                        setDelta(String(savedData.delta));
-                    }
-                }
-            } catch (e) {
-                console.error("Failed to load data from file system", e);
-                Alert.alert("Error", "Unable to load saved data.");
-            } finally {
-                setIsLoading(false); // Done loading
-            }
-        };
+    // State for max distance
+    const [maxDistance, setMaxDistance] = useState<string>(geojson.maxDistanceReference || "1000");
 
-        loadData();
-    }, []); // Empty array ensures this runs once on mount
+    // Load saved data when the screen comes into focus
+    useFocusEffect(
+        useCallback(() => {
+            const loadData = async () => {
+                try {
+                    const fileInfo = await FileSystem.getInfoAsync(FILE_URI);
+                    if (fileInfo.exists) {
+                        const fileContents = await FileSystem.readAsStringAsync(FILE_URI);
+                        const savedData = JSON.parse(fileContents);
+                        
+                        if (savedData.features) {
+                            setFeatures(savedData.features as Feature[]);
+                        }
+                        if (savedData.seaLevel !== undefined) {
+                            setSeaLevel(String(savedData.seaLevel));
+                        }
+                        if (savedData.delta !== undefined) {
+                            setDelta(String(savedData.delta));
+                        }
+                        if (savedData.maxDistance !== undefined) {
+                            setMaxDistance(String(savedData.maxDistance));
+                        }
+                    }
+                } catch (e) {
+                    console.error("Failed to load data from file system", e);
+                    Alert.alert("Error", "Unable to load saved data.");
+                } finally {
+                    setIsLoading(false); // Done loading
+                }
+            };
+
+            loadData();
+        }, [])
+    );
 
     // Function to save data (this is your 'saveAndExport')
     const saveData = useCallback(async () => {
@@ -68,7 +77,8 @@ export const useDataPersistence = (geojson: FeatureCollection) => {
             ...(geojson as any), 
             features,
             seaLevel: parseFloat(seaLevel.replace(',', '.')) || 0,
-            delta: parseFloat(delta.replace(',', '.')) || 0
+            delta: parseFloat(delta.replace(',', '.')) || 0,
+            maxDistance: parseFloat(maxDistance.replace(',', '.')) || 0
         };
         try {
             const jsonValue = JSON.stringify(out);
@@ -79,7 +89,7 @@ export const useDataPersistence = (geojson: FeatureCollection) => {
             console.error("Failed to save data", e);
             Alert.alert("Error", "Unable to save changes.");
         }
-    }, [features, seaLevel, delta]);
+    }, [features, seaLevel, delta, maxDistance]);
 
     // Function to reset data to default
     const resetData = useCallback(async () => {
@@ -97,6 +107,7 @@ export const useDataPersistence = (geojson: FeatureCollection) => {
                             setFeatures(initial); // Reset to the initial map
                             setSeaLevel("8.0");
                             setDelta(geojson.deltaReference || "4.5");
+                            setMaxDistance(geojson.maxDistanceReference || "1000");
                             Alert.alert("Reset", "Data has been reset.");
                         } catch (e) {
                             console.error("Failed to reset data", e);
@@ -116,6 +127,8 @@ export const useDataPersistence = (geojson: FeatureCollection) => {
         setSeaLevel,
         delta,
         setDelta,
+        maxDistance,
+        setMaxDistance,
         isLoading,
         saveData, 
         resetData

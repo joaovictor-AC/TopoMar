@@ -40,6 +40,7 @@ export default function RootLayout() {
       
       {/* The 'level' screen will show a header with a custom title. */}
       <Stack.Screen name="(tabs)/(water_level)/level" options={{headerTitle: "Water Level"}}/>
+      <Stack.Screen name="(tabs)/(database)/database" options={{headerTitle: "Database"}}/>
     </Stack>
   );
 }

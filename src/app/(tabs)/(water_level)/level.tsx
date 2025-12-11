@@ -27,11 +27,13 @@ export default function WaterLevelScreen() {
         setSeaLevel,
         delta,
         setDelta,
+        maxDistance,
+        setMaxDistance,
         isLoading,
-        saveData,    // Renamed from saveAndExport
+        saveData,
         resetData
     } = useDataPersistence(geojson);
-    
+
     // State for UI filtering (this is NOT persistence logic)
     const [filter, setFilter] = useState<'all' | 'visible' | 'submerged'>('all');
     const [searchQuery, setSearchQuery] = useState<string>("");
@@ -50,7 +52,7 @@ export default function WaterLevelScreen() {
         // Use hauteurAuDessusNiveauMer from JSON (convert string to number)
         const alt1 = parseFloat(feature.properties?.altitude || "0");
         const { isVisible } = calculateVisibility(alt1, seaLevelValue, deltaValue);
-        
+
         if (isVisible) {
             acc.visible++;
         } else {
@@ -65,27 +67,27 @@ export default function WaterLevelScreen() {
         const alt1 = parseFloat(feature.properties?.altitude || "0");
         const { isVisible } = calculateVisibility(alt1, seaLevelValue, deltaValue);
         const name = feature.properties?.nom?.toLowerCase() || "";
-        
+
         // Filter by visibility
         if (filter === 'visible' && !isVisible) return false;
         if (filter === 'submerged' && isVisible) return false;
-        
+
         // Filter by search query
         if (searchQuery && !name.includes(searchQuery.toLowerCase())) return false;
-        
+
         return true;
     });
 
     return (
-        <View style={{flex: 1}}>
-            <ScrollView 
-                style={{flex: 1}}
+        <View style={{ flex: 1 }}>
+            <ScrollView
+                style={{ flex: 1 }}
                 contentContainerStyle={cardStyle.scrollContent}
                 showsVerticalScrollIndicator={true}
             >
                 <Text style={screenStyle.title}>Water Level Calculator</Text>
-                
-                
+
+
                 <View style={cardStyle.seaLevelCard}>
                     {/* Sea Level Input (HE) */}
                     <Text style={cardStyle.seaLevelLabel}>Sea Level Height (HE) in meters:</Text>
@@ -96,7 +98,7 @@ export default function WaterLevelScreen() {
                         onChangeText={setSeaLevel}
                         placeholder="Enter sea level (e.g., 4.5 or 4,5)"
                     />
-                    
+
                     {/* Delta Input (Δ)*/}
                     <Text style={[cardStyle.seaLevelLabel, { marginTop: 12 }]}>Delta (Δ) in meters:</Text>
                     <TextInput
@@ -105,6 +107,16 @@ export default function WaterLevelScreen() {
                         keyboardType="numeric"
                         onChangeText={setDelta}
                         placeholder="Enter delta value (e.g., 0.5)"
+                    />
+
+                    {/* Maximum Distance Input */}
+                    <Text style={[cardStyle.seaLevelLabel, { marginTop: 12 }]}>Maximum Distance in meters:</Text>
+                    <TextInput
+                        style={cardStyle.seaLevelInput}
+                        value={maxDistance}
+                        keyboardType="numeric"
+                        onChangeText={setMaxDistance}
+                        placeholder="Enter maximum distance (e.g., 1000)"
                     />
                 </View>
 
@@ -136,7 +148,7 @@ export default function WaterLevelScreen() {
                         placeholderTextColor="#999"
                     />
                     {searchQuery.length > 0 && (
-                        <TouchableOpacity 
+                        <TouchableOpacity
                             style={buttonStyle.clearButton}
                             onPress={() => setSearchQuery("")}
                         >
@@ -147,7 +159,7 @@ export default function WaterLevelScreen() {
 
                 {/* Filter Buttons */}
                 <View style={buttonStyle.filterContainer}>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={[buttonStyle.filterButton, filter === 'all' && buttonStyle.filterButtonActive]}
                         onPress={() => setFilter('all')}
                     >
@@ -155,8 +167,8 @@ export default function WaterLevelScreen() {
                             All ({features.length})
                         </Text>
                     </TouchableOpacity>
-                    
-                    <TouchableOpacity 
+
+                    <TouchableOpacity
                         style={[buttonStyle.filterButton, filter === 'visible' && buttonStyle.filterButtonActive]}
                         onPress={() => setFilter('visible')}
                     >
@@ -164,8 +176,8 @@ export default function WaterLevelScreen() {
                             Visible ({stats.visible})
                         </Text>
                     </TouchableOpacity>
-                    
-                    <TouchableOpacity 
+
+                    <TouchableOpacity
                         style={[buttonStyle.filterButton, filter === 'submerged' && buttonStyle.filterButtonActive]}
                         onPress={() => setFilter('submerged')}
                     >
@@ -187,12 +199,12 @@ export default function WaterLevelScreen() {
                     // Use hauteurAuDessusNiveauMer from JSON (convert string to number)
                     const alt1 = parseFloat(item.properties?.altitude || "0");
                     const alt2 = item.properties?.alt2;
-                    
+
                     // Calculate visibility
                     const { isVisible, visibilityHeight } = calculateVisibility(alt1, seaLevelValue, deltaValue);
-                    
+
                     return (
-                        <View 
+                        <View
                             key={index}
                             style={[
                                 cardStyle.card,
@@ -223,7 +235,7 @@ export default function WaterLevelScreen() {
                                 <View style={cardStyle.dataRow}>
                                     <Text style={cardStyle.label}>Alt2:</Text>
                                     <Text style={cardStyle.value}>{alt2} m</Text>
-Next, I'd like to show the `effectiveSeaLevel` in the `Sea Level Input` card. Can you show me how to do that?                                </View>
+                                </View>
                             )}
 
                             <View style={cardStyle.dataRow}>
@@ -238,7 +250,7 @@ Next, I'd like to show the `effectiveSeaLevel` in the `Sea Level Input` card. Ca
 
                             <View style={cardStyle.infoBox}>
                                 <Text style={cardStyle.infoText}>
-                                    {isVisible 
+                                    {isVisible
                                         ? `✅ Rock is ${visibilityHeight?.toFixed(2)}m above water`
                                         : `❌ Rock is ${Math.abs(visibilityHeight || 0).toFixed(2)}m below water`
                                     }
