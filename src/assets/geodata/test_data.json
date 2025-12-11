@@ -1,0 +1,52 @@
+{
+	"type": "FeatureCollection",
+	"deltaReference": "2.0",
+	"maxDistanceReference": "500",
+	"features": [
+		{
+			"type": "Feature",
+			"properties": {
+				"altitude": "5.0",
+				"featureType": "Test Rock",
+				"nom": "Test Rock 1 (High)"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					-4.4533698,
+					48.6579527
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"altitude": "1.0",
+				"featureType": "Test Rock",
+				"nom": "Test Rock 2 (Low)"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					-4.4551801,
+					48.6601895
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"altitude": "-2.0",
+				"featureType": "Test Rock",
+				"nom": "Test Rock 3 (Submerged)"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					-4.4519506,
+					48.6615468
+				]
+			}
+		}
+	]
+}

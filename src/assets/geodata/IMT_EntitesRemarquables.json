@@ -1,113 +1,151 @@
 {
-	"type":"FeatureCollection",
-	"features":[
-		{
-			"type":"Feature",
-			"properties":{
-				"featureType":"Sea area/named water area",
-				"nom":"Mengam (Balise)"
-			},
-
-			"geometry":{"type":"Point","coordinates":[-4.5758617,48.3387435]}
-		},
-		{
-			"type":"Feature",
-			"properties":{
-				"featureType":"Land region",
-				"nom":"Pointe du Dellec"
-			},
-
-			"geometry":{"type":"Point","coordinates":[-4.56722,48.35198]}
-		},
-		{
-			"type":"Feature",
-			"properties":{
-				"featureType":"Land region",
-				"nom":"Pointe Robert"
-			},
-
-			"geometry":{"type":"Point","coordinates":[-4.55521,48.33802]}
-		},
-		{
-			"type":"Feature",
-			"properties":{
-				"featureType":"Land region",
-				"nom":"Pointe du Stiff"
-			},
-
-			"geometry":{"type":"Point","coordinates":[-4.54123,48.34073]}
-		},
-		{
-			"type":"Feature",
-			"properties":{
-				"featureType":"Land region",
-				"nom":"Château d'eau"
-			},
-
-			"geometry":{"type":"Point","coordinates":[-4.5832041,48.3501304]}
-		},
-		{
-			"type":"Feature",
-			"properties":{
-				"featureType":"Land region",
-				"nom":"Pointe de Cornouaille"
-			},
-
-			"geometry":{"type":"Point","coordinates":[-4.57076,48.33016]}
-		},
-		{
-			"type":"Feature",
-			"properties":{
-				"featureType":"Land region",
-				"nom":"Pointe Kerviniou"
-			},
-
-			"geometry":{"type":"Point","coordinates":[-4.57843,48.32444]}
-		},
-		{
-			"type":"Feature",
-			"properties":{
-				"featureType":"Sea area/named water area",
-				"nom":"Basse Goudron (Bouée)"
-			},
-
-			"geometry":{"type":"Point","coordinates":[-4.5809333,48.3338167]}
-		},
-		{
-			"type":"Feature",
-			"properties":{
-				"featureType":"Sea area/named water area",
-				"nom":"Kerviniou (Bouée)"
-			},
-
-			"geometry":{"type":"Point","coordinates":[-4.5871333,48.3293333]}
-		},
-		{
-			"type":"Feature",
-			"properties":{
-				"featureType":"Sea area/named water area",
-				"nom":"Fillettes (Bouée)"
-			},
-
-			"geometry":{"type":"Point","coordinates":[-4.5942,48.32925]}
-		},
-		{
-			"type":"Feature",
-			"properties":{
-				"featureType":"Land region",
-				"nom":"Le Portzic"
-			},
-
-			"geometry":{"type":"Point","coordinates":[-4.5340102,48.3582794]}
-		},
-		{
-			"type":"Feature",
-			"properties":{
-				"featureType":"Land region",
-				"nom":"Ilot et Pointe des Capucins"
-			},
-
-			"geometry":{"type":"Polygon","coordinates":[[[-4.57961,48.31866],[-4.58002,48.31873],[-4.58049,48.31891],[-4.5809,48.31863],[-4.58103,48.31862],[-4.58114,48.31885],[-4.58144,48.31887],[-4.58146,48.31901],[-4.58161,48.31914],[-4.58165,48.31928],[-4.58213,48.31917],[-4.58211,48.31894],[-4.58248,48.31859],[-4.58296,48.31845],[-4.58317,48.31852],[-4.58333,48.31869],[-4.58327,48.31923],[-4.58308,48.31939],[-4.58317,48.31949],[-4.58302,48.31959],[-4.58284,48.31955],[-4.5826,48.31965],[-4.58248,48.31965],[-4.58235,48.31937],[-4.58219,48.31933],[-4.58141,48.3195],[-4.5815,48.31967],[-4.58132,48.31975],[-4.58114,48.31946],[-4.58084,48.31938],[-4.58053,48.31961],[-4.58059,48.31971],[-4.58047,48.31979],[-4.58029,48.31975],[-4.58035,48.31985],[-4.58023,48.31991],[-4.5799,48.31985],[-4.57961,48.31866]]]}
-		}
-	]
+  "type": "FeatureCollection",
+  "deltaReference": "4.5",
+  "maxDistanceReference": "1000",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "altitude": "0",
+        "featureType": "Sea area/named water area",
+        "nom": "Mengam (Balise)"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-4.5758617, 48.3387435]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "altitude": "0",
+        "featureType": "Land region",
+        "nom": "Pointe du Dellec"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-4.56722, 48.35198]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "altitude": "0",
+        "featureType": "Land region",
+        "nom": "Pointe Robert"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-4.55521, 48.33802]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "altitude": "0",
+        "featureType": "Land region",
+        "nom": "Pointe du Stiff"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-4.54123, 48.34073]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "altitude": "0",
+        "featureType": "Land region",
+        "nom": "Château d'eau"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-4.5832041, 48.3501304]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "altitude": "0",
+        "featureType": "Land region",
+        "nom": "Pointe de Cornouaille"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-4.57076, 48.33016]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "altitude": "0",
+        "featureType": "Land region",
+        "nom": "Pointe Kerviniou"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-4.57843, 48.32444]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "altitude": "0",
+        "featureType": "Sea area/named water area",
+        "nom": "Basse Goudron (Bouée)"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-4.5809333, 48.3338167]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "altitude": "0",
+        "featureType": "Sea area/named water area",
+        "nom": "Kerviniou (Bouée)"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-4.5871333, 48.3293333]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "altitude": "0",
+        "featureType": "Sea area/named water area",
+        "nom": "Fillettes (Bouée)"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-4.5942, 48.32925]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "altitude": "0",
+        "featureType": "Land region",
+        "nom": "Le Portzic"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-4.5340102, 48.3582794]
+      }
+    },
+    {
+	  "type": "Feature",
+	  "properties": {
+		"altitude": "0",
+		"featureType": "Land region",
+		"nom": "Pointe des Espagnols"
+	  },
+	  "geometry": {
+		"type": "Point",
+		"coordinates": [-4.52248, 48.36696]
+	  }
 	}
+  ]
+}
