@@ -4,35 +4,35 @@ import { useEffect, useState } from "react";
 import { Platform } from "react-native";
 
 /**
- * Get the device pitch (tilt) in degrees using motion sensors.
- * @returns {number} pitch in degrees
- * @see {@link https://docs.expo.dev/versions/latest/sdk/devicemotion/| Expo DeviceMotion} for more details.
+ * Obtient l'inclinaison (pitch) de l'appareil en degrés à l'aide des capteurs de mouvement.
+ * @returns {number} pitch en degrés
+ * @see {@link https://docs.expo.dev/versions/latest/sdk/devicemotion/| Expo DeviceMotion} pour plus de détails.
  */
 export const useDevicePitch = () => {
   const [pitch, setPitch] = useState(0);
 
   useEffect(() => {
-    // Pede permissão para usar os sensores de movimento
+    // Demande la permission d'utiliser les capteurs de mouvement
     DeviceMotion.requestPermissionsAsync();
 
-    // Adiciona um listener para o DeviceMotion
+    // Ajoute un écouteur pour DeviceMotion
     const subscription = DeviceMotion.addListener((deviceMotionData) => {
       if (deviceMotionData.rotation) {
-        // 'beta' é o ângulo de inclinação (pitch) em radianos.
+        // 'beta' est l'angle d'inclinaison (pitch) en radians.
         const betaRad = deviceMotionData.rotation.beta;
         
-        // Converte de radianos para graus
+        // Convertit de radians en degrés
         const betaDeg = betaRad * (180 / Math.PI);
         
-        // ➋ recentrage : 90° (portrait-horizon) → 0°, vers le bas → négatif, vers le haut → positif
+        // ➋ Recentrage : 90° (portrait-horizon) → 0°, vers le bas → négatif, vers le haut → positif
         const pitchCentered = 90 - betaDeg;
-        // ➌ (optionnel) borne pour rester propre
+        // ➌ (Optionnel) borne pour rester propre
         const bounded = Math.max(-90, Math.min(90, pitchCentered));
         setPitch(bounded);
       }
     });
 
-    // Define a frequência de atualização para ser suave
+    // Définit la fréquence de mise à jour pour être fluide
     DeviceMotion.setUpdateInterval(100);
 
     return () => {
@@ -44,9 +44,9 @@ export const useDevicePitch = () => {
 };
 
 /**
- * Custom hook to get the device heading (compass direction).
- * Uses Location API for iOS and Magnetometer for Android.
- * @returns {number} heading in degrees
+ * Hook personnalisé pour obtenir le cap de l'appareil (direction de la boussole).
+ * Utilise l'API Location pour iOS et le magnétomètre pour Android.
+ * @returns {number} cap en degrés
  */
 export const useOrientation = (): number => {
   const [heading, setHeading] = useState(0);
@@ -56,7 +56,7 @@ export const useOrientation = (): number => {
 
     const startTracking = async () => {
       if (Platform.OS === 'ios') {
-        // iOS: usar Location API (más preciso)
+        // iOS : utiliser l'API Location (plus précis)
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status === "granted") {
           subscription = await Location.watchHeadingAsync((headingData) => {
@@ -66,19 +66,19 @@ export const useOrientation = (): number => {
           });
         }
       } else {
-        // Android: usar Magnetometer directamente
+        // Android : utiliser le magnétomètre directement
         const { status } = await Magnetometer.requestPermissionsAsync();
         if (status === "granted") {
           Magnetometer.setUpdateInterval(100);
           
           subscription = Magnetometer.addListener((data) => {
-            // Calcular el ángulo del magnetómetro
+            // Calculer l'angle du magnétomètre
             let angle = Math.atan2(data.y, data.x) * (180 / Math.PI);
             
-            // Normalizar a 0-360
+            // Normaliser entre 0 et 360
             angle = (angle + 360) % 360;
             
-            // En Android, ajustar para que 0° sea Norte
+            // Sur Android, ajuster pour que 0° soit le Nord
             const heading = (360 - angle) % 360;
             
             setHeading(heading);

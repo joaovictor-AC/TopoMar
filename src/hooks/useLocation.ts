@@ -2,44 +2,44 @@ import * as Location from "expo-location";
 import { useEffect, useState } from "react";
 
 /**
- * A custom React hook to track the user's current geographical location in real-time.
+ * Un hook React personnalisé pour suivre la position géographique de l'utilisateur en temps réel.
  *
- * This hook handles requesting foreground location permissions and sets up a
- * subscription to `expo-location` to receive continuous updates. It cleans
- * up the subscription automatically when the component unmounts.
+ * Ce hook gère la demande de permissions de localisation au premier plan et configure un
+ * abonnement à `expo-location` pour recevoir des mises à jour continues. Il nettoie
+ * l'abonnement automatiquement lorsque le composant est démonté.
  *
  * @returns {{
- *  location: Location.LocationObject | null; [The latest location object from `expo-location`, or `null` if not yet available]
- *  errorMsg: string | null; [A string with an error message if permissions are denied, otherwise `null`]
+ *  location: Location.LocationObject | null; [Le dernier objet de localisation de `expo-location`, ou `null` si pas encore disponible]
+ *  errorMsg: string | null; [Une chaîne avec un message d'erreur si les permissions sont refusées, sinon `null`]
  * }}
  *
- * @see {@link https://docs.expo.dev/versions/latest/sdk/location/| Expo Location} for more details.
+ * @see {@link https://docs.expo.dev/versions/latest/sdk/location/| Expo Location} pour plus de détails.
  */
 
 export const useLocation = (): {
   location: Location.LocationObject | null;
   errorMsg: string | null;
 } => {
-  // State to store the current location object
+  // État pour stocker l'objet de localisation actuel
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null
   );
-  // State to store any error messages
+  // État pour stocker les messages d'erreur
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    // Variable to hold the location subscription object
+    // Variable pour contenir l'objet d'abonnement à la localisation
     let subscription: Location.LocationSubscription | null = null;
 
     const startLocationTracking = async () => {
-      // Request foreground location permissions from the user
+      // Demander les permissions de localisation au premier plan à l'utilisateur
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
+        setErrorMsg("La permission d'accéder à la localisation a été refusée");
         return;
       }
 
-      // Set up a watcher to receive location updates
+      // Configurer un observateur pour recevoir les mises à jour de localisation
       subscription = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.BestForNavigation,
@@ -47,18 +47,18 @@ export const useLocation = (): {
           timeInterval: 100,
         },
         (newLocation) => {
-          setLocation(newLocation); // Update state with the new location
+          setLocation(newLocation); // Mettre à jour l'état avec la nouvelle localisation
         }
       );
     };
 
     startLocationTracking();
 
-    // Cleanup function: remove the subscription when the component unmounts
+    // Fonction de nettoyage : supprimer l'abonnement lorsque le composant est démonté
     return () => {
       subscription?.remove();
     };
-  }, []); // The empty dependency array ensures this effect runs only once on mount
+  }, []); // Le tableau de dépendances vide assure que cet effet ne s'exécute qu'une seule fois au montage
 
   return { location, errorMsg };
 };

@@ -7,40 +7,40 @@ import { useCallback, useState } from "react";
 import { Alert } from "react-native";
 
 /**
- * Custom hook to manage data persistence for geojson features,
- * sea level height (HE), and delta values using Expo FileSystem.
+ * Hook personnalisé pour gérer la persistance des données pour les fonctionnalités geojson,
+ * la hauteur du niveau de la mer (HE) et les valeurs delta en utilisant Expo FileSystem.
  * 
- * @param {Feature[]} initialFeatures - The initial array of geojson features.
- * @param {object} geojson - The original geojson object to merge with saved data.
- * @returns An object containing state variables and functions for data management.
+ * @param {Feature[]} initialFeatures - Le tableau initial des fonctionnalités geojson.
+ * @param {object} geojson - L'objet geojson original à fusionner avec les données sauvegardées.
+ * @returns Un objet contenant les variables d'état et les fonctions de gestion des données.
  */
 export const useDataPersistence = (geojson: FeatureCollection) => {
 
-    // Define a file URI in the app's persistent document directory
+    // Définit un URI de fichier dans le répertoire de documents persistants de l'application
     const FILE_URI = FileSystem.documentDirectory + "myGeoData.json";
     const initialFeatures = geojson.features as Feature[] || [];
 
-    // Keep the original data as a fallback
+    // Conserve les données originales comme solution de repli
     const initial = initialFeatures.map((f) => ({ ...f }));
 
-    // Set initial state from the file, it will be updated from storage
+    // Définit l'état initial à partir du fichier, il sera mis à jour depuis le stockage
     const [features, setFeatures] = useState<Feature[]>(initial);
     const [isLoading, setIsLoading] = useState(true);
     
-    // State for sea level height (HE)
+    // État pour la hauteur du niveau de la mer (HE)
     const [seaLevel, setSeaLevel] = useState<string>("8.0");
     
-    // State for delta
+    // État pour le delta
     const [delta, setDelta] = useState<string>(geojson.deltaReference || "4.5");
 
-    // State for max distance
+    // État pour la distance maximale
     const [maxDistance, setMaxDistance] = useState<string>(geojson.maxDistanceReference || "1000");
 
-    // State for references (to support resetting to imported defaults)
+    // État pour les références (pour supporter la réinitialisation aux valeurs par défaut importées)
     const [deltaReference, setDeltaReference] = useState<string>(geojson.deltaReference || "4.5");
     const [maxDistanceReference, setMaxDistanceReference] = useState<string>(geojson.maxDistanceReference || "1000");
 
-    // Load saved data when the screen comes into focus
+    // Charge les données sauvegardées lorsque l'écran devient actif
     useFocusEffect(
         useCallback(() => {
             const loadData = async () => {
@@ -62,7 +62,7 @@ export const useDataPersistence = (geojson: FeatureCollection) => {
                         if (savedData.maxDistance !== undefined) {
                             setMaxDistance(String(savedData.maxDistance));
                         }
-                        // Load references if they exist
+                        // Charge les références si elles existent
                         if (savedData.deltaReference !== undefined) {
                             setDeltaReference(String(savedData.deltaReference));
                         }
@@ -72,9 +72,9 @@ export const useDataPersistence = (geojson: FeatureCollection) => {
                     }
                 } catch (e) {
                     console.error("Failed to load data from file system", e);
-                    Alert.alert("Error", "Unable to load saved data.");
+                    Alert.alert("Erreur", "Impossible de charger les données sauvegardées.");
                 } finally {
-                    setIsLoading(false); // Done loading
+                    setIsLoading(false); // Chargement terminé
                 }
             };
 
@@ -82,7 +82,7 @@ export const useDataPersistence = (geojson: FeatureCollection) => {
         }, [])
     );
 
-    // Function to save data (this is your 'saveAndExport')
+    // Fonction pour sauvegarder les données (c'est votre 'saveAndExport')
     const saveData = useCallback(async () => {
         const out = { 
             ...(geojson as any), 
@@ -96,31 +96,31 @@ export const useDataPersistence = (geojson: FeatureCollection) => {
         try {
             const jsonValue = JSON.stringify(out);
             await FileSystem.writeAsStringAsync(FILE_URI, jsonValue);
-            Alert.alert("Saved", "Changes have been written to the file.");
+            Alert.alert("Sauvegardé", "Les modifications ont été enregistrées dans le fichier.");
             console.log("Updated geojson saved to file:", FILE_URI);
         } catch (e) {
             console.error("Failed to save data", e);
-            Alert.alert("Error", "Unable to save changes.");
+            Alert.alert("Erreur", "Impossible d'enregistrer les modifications.");
         }
     }, [features, seaLevel, delta, maxDistance, deltaReference, maxDistanceReference]);
 
-    // Function to reset data to default
+    // Fonction pour réinitialiser les données aux valeurs par défaut
     const resetData = useCallback(async () => {
         Alert.alert(
-            "Reset",
-            "Do you want to reset values to defaults?",
+            "Réinitialiser",
+            "Voulez-vous réinitialiser les valeurs par défaut ?",
             [
-                { text: "No", style: "cancel" },
+                { text: "Non", style: "cancel" },
                 {
-                    text: "Yes",
+                    text: "Oui",
                     onPress: async () => {
                         try {
-                            // Reset state to references
+                            // Réinitialiser l'état aux références
                             setSeaLevel("8.0");
                             setDelta(deltaReference);
                             setMaxDistance(maxDistanceReference);
                             
-                            // Save immediately with reset values
+                            // Sauvegarder immédiatement avec les valeurs réinitialisées
                             const out = { 
                                 ...(geojson as any), 
                                 features,
@@ -133,21 +133,21 @@ export const useDataPersistence = (geojson: FeatureCollection) => {
                             const jsonValue = JSON.stringify(out);
                             await FileSystem.writeAsStringAsync(FILE_URI, jsonValue);
 
-                            Alert.alert("Reset", "Values have been reset to defaults.");
+                            Alert.alert("Réinitialisé", "Les valeurs ont été réinitialisées par défaut.");
                         } catch (e) {
                             console.error("Failed to reset data", e);
-                            Alert.alert("Error", "Unable to reset data.");
+                            Alert.alert("Erreur", "Impossible de réinitialiser les données.");
                         }
                     },
                 },
             ]
         );
-    }, [initial, deltaReference, maxDistanceReference, features]);
+    }, [deltaReference, maxDistanceReference, features]);
 
-    // Return all the state and functions the component needs
+    // Retourne tout l'état et les fonctions dont le composant a besoin
     return {
         features,
-        setFeatures, // Return setFeatures if you modify it (e.g., editing a rock)
+        setFeatures, // Retourne setFeatures si vous le modifiez (par exemple, modification d'un rocher)
         seaLevel,
         setSeaLevel,
         delta,

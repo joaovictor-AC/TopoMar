@@ -11,13 +11,13 @@ import React, { useRef, useState } from "react";
 import { View } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
-// MapsScreen: shows a map centered on a region and renders markers from a GeoJSON file.
+// MapsScreen : affiche une carte centrée sur une région et rend des marqueurs à partir d'un fichier GeoJSON.
 export default function MapsScreen() {
     const markerRefs = useRef<any[]>([]);
     const [selectedFeature, setSelectedFeature] = useState<any>(null);
     const [modalVisible, setModalVisible] = useState(false);
 
-    // Read persisted sea level and delta so modal shows real visibility
+    // Lire le niveau de la mer et le delta persistants pour que le modal affiche la visibilité réelle
     const { features, seaLevel, delta, isLoading } = useDataPersistence(geojson);
     const seaLevelValue = parseFloat(String(seaLevel).replace(',', '.')) || 0;
     const deltaValue = parseFloat(String(delta).replace(',', '.')) || 0;
@@ -34,21 +34,21 @@ export default function MapsScreen() {
         longitudeDelta: INITIAL_REGION.longitudeDelta,
     } : INITIAL_REGION;
 
-    // modal visibility and selectedFeature handled below via FeatureModal
+    // Visibilité du modal et fonctionnalité sélectionnée gérées ci-dessous via FeatureModal
 
     return (
-        // container wraps the MapView to fill the screen
+        // Le conteneur enveloppe la MapView pour remplir l'écran
         <View style={{ flex: 1 }}>
 
-            {/* MapView: provider set to Google, starts at initialRegion and shows device location */}
+            {/* MapView : fournisseur défini sur Google, commence à initialRegion et affiche la position de l'appareil */}
             <MapView
                 key={firstFeature ? `${firstFeature.geometry.coordinates[0]}-${firstFeature.geometry.coordinates[1]}` : 'default'}
                 style={screenStyle.background}
                 provider={PROVIDER_GOOGLE}
                 initialRegion={initialRegion}
-                showsUserLocation={true} // show blue dot for user's current position (requires permissions)
+                showsUserLocation={true} // Afficher le point bleu pour la position actuelle de l'utilisateur (nécessite des permissions)
             >
-                {/* Render a Marker for each GeoJSON feature */}
+                {/* Rendre un marqueur pour chaque fonctionnalité GeoJSON */}
                 {features.map((feature, index) => {
                     const alt = parseFloat(feature?.properties?.altitude || '0');
                     const { isVisible } = calculateVisibility(alt, seaLevelValue, deltaValue);
@@ -63,7 +63,7 @@ export default function MapsScreen() {
                                 setModalVisible(true);
                             }}
                             coordinate={{
-                                // GeoJSON coordinates are [longitude, latitude]
+                                // Les coordonnées GeoJSON sont [longitude, latitude]
                                 latitude: feature.geometry.coordinates[1],
                                 longitude: feature.geometry.coordinates[0],
                             }}

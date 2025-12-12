@@ -1,13 +1,13 @@
 /**
- * Calculates the visibility of a rock based on its altitude and sea level
+ * Calcule la visibilité d'un rocher en fonction de son altitude et du niveau de la mer.
  *
- * Formula: visibility = Alt1 - HE
- * If visibility < 0, rock is submerged (not visible)
- * If visibility >= 0, rock is visible
+ * Formule : visibilité = Alt1 - HE
+ * Si visibilité < 0, le rocher est submergé (non visible).
+ * Si visibilité >= 0, le rocher est visible.
  *
- * @param {number | null | undefined} alt - Height above sea level (hauteurAuDessusNiveauMer)
- * @param {number} seaLevelValue - Current sea level height (HE)
- * @param {number} delta - Adjustment constant (4.5)
+ * @param {number | null | undefined} alt - Hauteur au-dessus du niveau de la mer (hauteurAuDessusNiveauMer).
+ * @param {number} seaLevelValue - Hauteur actuelle du niveau de la mer (HE).
+ * @param {number} delta - Constante d'ajustement (4.5).
  * @returns { isVisible: boolean, visibilityHeight: number | null}
  */
 export const calculateVisibility = (

@@ -24,12 +24,12 @@ export default function CameraScreen() {
   const prevHeadingRef = useRef(deviceHeading);
   useEffect(() => {
     setSmoothedHeading(prev => {
-      // lissage avec prise en compte du 0°/360°
+      // Lissage avec prise en compte du 0°/360°
       let delta = deviceHeading - prev;
       if (delta > 180) delta -= 360;
       if (delta < -180) delta += 360;
 
-      // Zona muerta: ignorar cambios pequeños para más estabilidad
+      // Zone morte : ignorer les petits changements pour plus de stabilité
       if (Math.abs(delta) < HEADING_DEADZONE) {
         return prev;
       }
@@ -40,13 +40,13 @@ export default function CameraScreen() {
     });
   }, [deviceHeading]);
 
-  // Lissage du pitch (ADDED)
+  // Lissage du tangage (AJOUTÉ)
   const [smoothedPitch, setSmoothedPitch] = useState(rawPitch);
   useEffect(() => {
     setSmoothedPitch(prev => {
       const delta = rawPitch - prev;
 
-      // Zona muerta: ignorar cambios pequeños para más estabilidad
+      // Zone morte : ignorer les petits changements pour plus de stabilité
       if (Math.abs(delta) < PITCH_DEADZONE) {
         return prev;
       }
@@ -59,27 +59,17 @@ export default function CameraScreen() {
   const heading = (smoothedHeading + HEADING_OFFSET + 360) % 360;
   const pitch = smoothedPitch;
 
-  const [permission, requestPermission] = useCameraPermissions(); // ADDED
+  const [permission, requestPermission] = useCameraPermissions(); // AJOUTÉ
 
-  // Refs and selection state for markers / modal
-  const markerRefs = useRef<any[]>([]);
+  // Références et état de sélection pour les marqueurs / modal
   const [selectedFeature, setSelectedFeature] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  // Read persisted sea level and delta so visibility reflects saved values
+  // Lire le niveau de la mer et le delta persistants pour que la visibilité reflète les valeurs sauvegardées
   const { features: persistedFeatures, seaLevel, delta, maxDistance } = useDataPersistence(geoJsonData as any);
   const seaLevelValue = parseFloat(String(seaLevel).replace(',', '.')) || 0;
   const deltaValue = parseFloat(String(delta).replace(',', '.')) || 0;
   const maxDistanceValue = parseFloat(String(maxDistance).replace(',', '.')) || MAX_DISTANCE;
-
-  // For the selected feature (e.g., when tapping a marker) compute current visibility
-  const selectedVisibility = selectedFeature
-    ? (() => {
-      const alt1 = parseFloat(selectedFeature?.properties?.altitude || '0');
-      const { isVisible } = calculateVisibility(alt1, seaLevelValue, deltaValue);
-      return isVisible ? 'VISIBLE' : 'SUBMERGED';
-    })()
-    : null;
 
   useEffect(() => {                                              
     if (permission && !permission.granted) {
@@ -104,63 +94,51 @@ export default function CameraScreen() {
         typeof coords[0] !== 'number' ||
         typeof coords[1] !== 'number'
       ) {
-        return; // ← on sort de ce feature
+        return; // ← On sort de cette fonctionnalité
       }
       // Coordonnées de l'utilisateur et du rocher
       const targetCoords = { latitude: coords[1], longitude: coords[0] };
 
-      //Calcul de la distance et de la direction du rocher 
+      // Calcul de la distance et de la direction du rocher 
       const distance = calculateDistance(location.coords, targetCoords);
       const targetBearing = calculateBearing(location.coords, targetCoords);
 
-      // --- visibilité selon altitude / niveau de la mer (persisted values)
+      // --- Visibilité selon altitude / niveau de la mer (valeurs persistantes)
       const alt1 = parseFloat(feature?.properties?.altitude || '0');
       const { isVisible: isVisibleByHeight } = calculateVisibility(alt1, seaLevelValue, deltaValue);
-
-      // COMENTADO: Mostrar todas las rocas independientemente del nivel del mar
-      // Se a rocha for considerada visível pelo cálculo (ou seja, não submersa), não mostrar o card
-      // if (isVisibleByHeight) return;
 
       // Filtrer par distance
       if (distance < MIN_DISTANCE) return;
 
-      // If the rock is submerged AND farther than maxDistance, don't show it
+      // Si le rocher est submergé ET plus loin que la distance maximale, ne pas l'afficher
       if (!isVisibleByHeight || distance > maxDistanceValue) return;
 
-      // --- visibilité H ---
-      let angleDifference = targetBearing - heading; // heading = lissé + offset
+      // --- Visibilité H ---
+      let angleDifference = targetBearing - heading; // heading = lissé + décalage
       if (angleDifference > 180) angleDifference -= 360;
       if (angleDifference < -180) angleDifference += 360;
 
-      // Si hors du champs visuel, étiquette n'apparaît pas 
+      // Si hors du champ visuel, l'étiquette n'apparaît pas 
       const now = Date.now();
       const halfFov = HORIZONTAL_FOV / 2;
 
-      // test strict
+      // Test strict
       const inConeStrict = Math.abs(angleDifference) < (halfFov - FOV_MARGIN);
 
-      // test “presque dedans” (grâce/hystérésis)
+      // Test "presque dedans" (grâce/hystérésis)
       const inConeNear = Math.abs(angleDifference) < (halfFov - FOV_MARGIN + HYSTERESIS_DEG);
 
       const name = feature.properties.nom || 'Inconnu';
       const lastTs = lastVisibleRef.current[name] ?? 0;
 
-      // garder si strictement dedans OU si presque dedans ET qu’on l’a vu récemment
+      // Garder si strictement dedans OU si presque dedans ET qu'on l'a vu récemment
       const isHorizVisible =
         inConeStrict || (inConeNear && now - lastTs < VIS_STICK_MS);
 
       if (!isHorizVisible) return;
 
-      // si visible, on met à jour le timestamp (sert à la “grâce”)
+      // Si visible, on met à jour le timestamp (sert à la "grâce")
       lastVisibleRef.current[name] = now;
-
-      // ==================== VISIBILITÉ VERTICALE ====================
-      // TEMPORAL: Desactivar filtro vertical para ver todas las rocas
-      // const expectedVerticalAngle = Math.atan2(0, distance) * (180 / Math.PI);
-      // const verticalTolerance = 60; // Tolerancia muy amplia
-      // const pitchDifference = Math.abs(-pitch - expectedVerticalAngle);
-      // const isVertOK = pitchDifference < verticalTolerance;
-      // if (!isVertOK) return;
 
       // ==================== PROJECTION HORIZONTALE (X) ====================
       const halfFovRad = (HORIZONTAL_FOV / 2) * Math.PI / 180;
@@ -177,19 +155,19 @@ export default function CameraScreen() {
       const clampedX = Math.max(20, Math.min(WIDTH_SCREEN - 20, screenX));
 
       // ==================== PROJECTION VERTICALE (Y) AMÉLIORÉE ====================
-      // Position Y basée sur:
-      // 1. Distance (plus loin = plus haut vers horizon)
-      // 2. Pitch du téléphone (compensation)
+      // Position Y basée sur :
+      // 1. Distance (plus loin = plus haut vers l'horizon)
+      // 2. Tangage du téléphone (compensation)
 
       const distanceFactor = Math.min(distance / MAX_DEPTH_METERS, 1);
 
       // Position de base au centre de l'écran
       const centerY = HEIGHT_SCREEN * 0.5;
 
-      // Décalage basé sur la distance (loin = monte vers horizon)
+      // Décalage basé sur la distance (loin = monte vers l'horizon)
       const distanceOffset = distanceFactor * (HEIGHT_SCREEN * 0.2);
 
-      // Compensation du pitch (si on pointe vers le haut, les labels descendent)
+      // Compensation du tangage (si on pointe vers le haut, les étiquettes descendent)
       const pitchOffset = (-pitch / 90) * (HEIGHT_SCREEN * 0.3);
 
       const screenY = centerY - distanceOffset + pitchOffset;
@@ -199,10 +177,10 @@ export default function CameraScreen() {
       const depth = Math.max(0, 1 - distance / MAX_DEPTH_METERS);
       const zIndex = 1000 + Math.round(depth * 1000);
 
-      // Scale plus progressif
+      // Échelle plus progressive
       const scale = 0.7 + 0.5 * depth; // 0.7 (loin) -> 1.2 (près)
 
-      // Opacity plus visible
+      // Opacité plus visible
       const opacity = 0.6 + 0.4 * depth; // 0.6 -> 1.0
 
       const distanceText = distance < 1000
@@ -274,8 +252,8 @@ export default function CameraScreen() {
       <View style={textStyle.overlay} pointerEvents="none">
         {location ? (
           <Text style={textStyle.overlayText}>
-            Azimut: {heading.toFixed(1)}° | Pitch: {pitch.toFixed(1)}° |
-            POIs: {arMarkers.length}
+            Azimut : {heading.toFixed(1)}° | Tangage : {pitch.toFixed(1)}° |
+            POIs : {arMarkers.length}
           </Text>
         ) : (
           <Text style={textStyle.overlayText}>
@@ -286,7 +264,7 @@ export default function CameraScreen() {
 
       <ReturnButton />
 
-      {/* Modal detalhado para o marcador selecionado (reutilizável) */}
+      {/* Modal détaillé pour le marqueur sélectionné (réutilisable) */}
       <FeatureModal
         visible={modalVisible}
         feature={selectedFeature}

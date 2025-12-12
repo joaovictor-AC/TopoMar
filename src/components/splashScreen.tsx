@@ -1,91 +1,91 @@
-// Import necessary modules
+// Importer les modules nécessaires
 import { screenStyle } from '@/style/screen/screen_style';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect, useState } from 'react';
 import { Animated, Image, View } from 'react-native';
 
-// Define the static asset for the splash screen image
+// Définir l'actif statique pour l'image de l'écran de démarrage
 const SPLASH_IMG = require('../assets/images/splash_screen.png');
 
 // ---
-// CRITICAL: Prevent the native Expo splash screen from auto-hiding.
-// This is called outside the component because it needs to run immediately
-// when the app loads, before React even renders. This allows our
-// custom component to control when the splash screen disappears.
+// CRITIQUE : Empêcher l'écran de démarrage natif d'Expo de se masquer automatiquement.
+// Ceci est appelé en dehors du composant car il doit s'exécuter immédiatement
+// au chargement de l'application, avant même que React ne fasse le rendu. Cela permet à notre
+// composant personnalisé de contrôler quand l'écran de démarrage disparaît.
 // ---
 SplashScreen.preventAutoHideAsync();
 
 /**
- * Props for the CustomSplashScreen component.
+ * Props pour le composant CustomSplashScreen.
  */
 interface CustomSplashScreenProps {
   /**
-   * A callback function that will be executed when the splash
-   * animation is complete and the component is ready to unmount.
+   * Une fonction de rappel qui sera exécutée lorsque l'animation de démarrage
+   * est terminée et que le composant est prêt à être démonté.
    */
   onFinish: () => void;
 }
 
 /**
- * A custom splash screen component.
+ * Un composant d'écran de démarrage personnalisé.
  *
- * This component takes full control over the splash screen experience.
- * It hides the native Expo splash screen and displays a custom
- * animation (a fade-out) before signaling that the app is ready
- * to display its main content via the `onFinish` prop.
+ * Ce composant prend le contrôle total de l'expérience de l'écran de démarrage.
+ * Il masque l'écran de démarrage natif d'Expo et affiche une animation
+ * personnalisée (un fondu sortant) avant de signaler que l'application est prête
+ * à afficher son contenu principal via la prop `onFinish`.
  */
 export default function CustomSplashScreen({ onFinish }: CustomSplashScreenProps) {
-  // `isVisible` controls whether this component renders anything.
-  // When false, the component returns null, unmounting it.
+  // `isVisible` contrôle si ce composant rend quelque chose.
+  // Si faux, le composant retourne null, le démontant.
   const [isVisible, setIsVisible] = useState(true);
 
-  // `fadeAnim` is the Animated value for the component's opacity.
-  // We initialize it to 1 (fully visible) and animate it to 0 (invisible).
-  // We use [0] to get the value itself, not the update function.
+  // `fadeAnim` est la valeur animée pour l'opacité du composant.
+  // Nous l'initialisons à 1 (totalement visible) et l'animons vers 0 (invisible).
+  // Nous utilisons [0] pour obtenir la valeur elle-même, pas la fonction de mise à jour.
   const fadeAnim = useState(new Animated.Value(1))[0];
 
-  // This effect runs only once when the component mounts (due to `[]`).
+  // Cet effet ne s'exécute qu'une seule fois au montage du composant (grâce à []).
   useEffect(() => {
-    // Hide the native splash screen now that our custom component is visible.
+    // Masquer l'écran de démarrage natif maintenant que notre composant personnalisé est visible.
     SplashScreen.hideAsync();
 
-    // Set a timer to keep the custom splash screen visible for a short duration (2 seconds).
-    // This allows time for any initial app setup or just for branding.
+    // Définir une minuterie pour garder l'écran de démarrage personnalisé visible pendant une courte durée (2 secondes).
+    // Cela laisse du temps pour toute configuration initiale de l'application ou simplement pour l'image de marque.
     const timer = setTimeout(() => {
-      // After 2 seconds, start the fade-out animation.
+      // Après 2 secondes, démarrer l'animation de fondu sortant.
       Animated.timing(fadeAnim, {
-        toValue: 0, // Animate opacity to 0
-        duration: 1000, // Animation duration (1 second)
-        useNativeDriver: true, // Use the native thread for better performance
+        toValue: 0, // Animer l'opacité vers 0
+        duration: 1000, // Durée de l'animation (1 seconde)
+        useNativeDriver: true, // Utiliser le thread natif pour de meilleures performances
       }).start(() => {
-        // This callback runs *after* the animation is complete.
-        setIsVisible(false); // Mark the component as invisible
-        onFinish(); // Notify the parent component that we are finished
+        // Ce rappel s'exécute *après* la fin de l'animation.
+        setIsVisible(false); // Marquer le composant comme invisible
+        onFinish(); // Notifier le composant parent que nous avons terminé
       });
-    }, 2000); // 2-second delay before starting the fade-out
+    }, 2000); // Délai de 2 secondes avant de commencer le fondu sortant
 
-    // Cleanup function: This will run if the component is unmounted
-    // *before* the timer finishes. This prevents memory leaks.
+    // Fonction de nettoyage : Ceci s'exécutera si le composant est démonté
+    // *avant* que la minuterie ne se termine. Cela empêche les fuites de mémoire.
     return () => {
       clearTimeout(timer);
     };
-  }, []); // The empty dependency array ensures this effect runs only once.
+  }, []); // Le tableau de dépendances vide assure que cet effet ne s'exécute qu'une seule fois.
 
-  // If the component is no longer visible, render nothing.
-  // This effectively unmounts the splash screen from the component tree.
+  // Si le composant n'est plus visible, ne rien rendre.
+  // Cela démonte effectivement l'écran de démarrage de l'arbre des composants.
   if (!isVisible) {
     return null;
   }
 
-  // Render the splash screen UI.
-  // We use `Animated.View` so we can animate its `opacity` style.
+  // Rendre l'interface utilisateur de l'écran de démarrage.
+  // Nous utilisons `Animated.View` pour pouvoir animer son style `opacity`.
   return (
     <Animated.View style={[screenStyle.background, { opacity: fadeAnim }]}>
       <View style={screenStyle.splash_screen}>
         <Image
           source={SPLASH_IMG}
           style={screenStyle.background}
-          resizeMode="cover" // Ensure the image covers the entire screen
+          resizeMode="cover" // S'assurer que l'image couvre tout l'écran
         />
       </View>
     </Animated.View>

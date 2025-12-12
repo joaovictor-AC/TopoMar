@@ -16,11 +16,11 @@ import {
     TouchableOpacity,
     View
 } from "react-native";
-// Import your new hook
+// Importer votre nouveau hook
 import { useDataPersistence } from "@/hooks/useDataPersistence";
 
 export default function WaterLevelScreen() {
-    // Call the hook to get all persistence logic and state
+    // Appeler le hook pour obtenir toute la logique de persistance et l'état
     const {
         features,
         seaLevel,
@@ -34,22 +34,22 @@ export default function WaterLevelScreen() {
         resetData
     } = useDataPersistence(geojson);
 
-    // State for UI filtering (this is NOT persistence logic)
+    // État pour le filtrage de l'interface utilisateur (ce n'est PAS la logique de persistance)
     const [filter, setFilter] = useState<'all' | 'visible' | 'submerged'>('all');
     const [searchQuery, setSearchQuery] = useState<string>("");
 
-    // Show a loading indicator while checking for the file
+    // Afficher un indicateur de chargement pendant la vérification du fichier
     if (isLoading) {
         return <LoadingScreen />;
     }
 
-    // --- Calculation logic remains in the component ---
+    // --- La logique de calcul reste dans le composant ---
     const seaLevelValue = parseFloat(seaLevel.replace(',', '.')) || 0;
     const deltaValue = parseFloat(delta.replace(',', '.')) || 0;
 
-    // Calculate statistics
+    // Calculer les statistiques
     const stats = features.reduce((acc, feature) => {
-        // Use hauteurAuDessusNiveauMer from JSON (convert string to number)
+        // Utiliser hauteurAuDessusNiveauMer du JSON (convertir la chaîne en nombre)
         const alt1 = parseFloat(feature.properties?.altitude || "0");
         const { isVisible } = calculateVisibility(alt1, seaLevelValue, deltaValue);
 
@@ -61,18 +61,18 @@ export default function WaterLevelScreen() {
         return acc;
     }, { visible: 0, submerged: 0 });
 
-    // Filter features based on visibility and search
+    // Filtrer les fonctionnalités en fonction de la visibilité et de la recherche
     const filteredFeatures = features.filter(feature => {
-        // Use hauteurAuDessusNiveauMer from JSON (convert string to number)
+        // Utiliser hauteurAuDessusNiveauMer du JSON (convertir la chaîne en nombre)
         const alt1 = parseFloat(feature.properties?.altitude || "0");
         const { isVisible } = calculateVisibility(alt1, seaLevelValue, deltaValue);
         const name = feature.properties?.nom?.toLowerCase() || "";
 
-        // Filter by visibility
+        // Filtrer par visibilité
         if (filter === 'visible' && !isVisible) return false;
         if (filter === 'submerged' && isVisible) return false;
 
-        // Filter by search query
+        // Filtrer par requête de recherche
         if (searchQuery && !name.includes(searchQuery.toLowerCase())) return false;
 
         return true;
@@ -89,7 +89,7 @@ export default function WaterLevelScreen() {
 
 
                 <View style={cardStyle.seaLevelCard}>
-                    {/* Sea Level Input (HE) */}
+                    {/* Entrée du niveau de la mer (HE) */}
                     <Text style={cardStyle.seaLevelLabel}>Sea Level Height (HE) in meters:</Text>
                     <TextInput
                         style={cardStyle.seaLevelInput}
@@ -99,52 +99,52 @@ export default function WaterLevelScreen() {
                         placeholder="Enter sea level (e.g., 4.5 or 4,5)"
                     />
 
-                    {/* Delta Input (Δ)*/}
-                    <Text style={[cardStyle.seaLevelLabel, { marginTop: 12 }]}>Delta (Δ) in meters:</Text>
+                    {/* Entrée du Delta (Δ) */}
+                    <Text style={[cardStyle.seaLevelLabel, { marginTop: 12 }]}>Delta (Δ) en mètres :</Text>
                     <TextInput
                         style={cardStyle.seaLevelInput}
                         value={delta}
                         keyboardType="numeric"
                         onChangeText={setDelta}
-                        placeholder="Enter delta value (e.g., 0.5)"
+                        placeholder="Entrez la valeur delta (ex: 0.5)"
                     />
 
-                    {/* Maximum Distance Input */}
-                    <Text style={[cardStyle.seaLevelLabel, { marginTop: 12 }]}>Maximum Distance in meters:</Text>
+                    {/* Entrée de la distance maximale */}
+                    <Text style={[cardStyle.seaLevelLabel, { marginTop: 12 }]}>Distance maximale en mètres :</Text>
                     <TextInput
                         style={cardStyle.seaLevelInput}
                         value={maxDistance}
                         keyboardType="numeric"
                         onChangeText={setMaxDistance}
-                        placeholder="Enter maximum distance (e.g., 1000)"
+                        placeholder="Entrez la distance maximale (ex: 1000)"
                     />
                 </View>
 
-                {/* Statistics Card */}
+                {/* Carte des statistiques */}
                 <View style={statsStyle.statsCard}>
                     <View style={statsStyle.statItem}>
                         <Text style={statsStyle.statNumber}>{features.length}</Text>
-                        <Text style={statsStyle.statLabel}>Total Rocks</Text>
+                        <Text style={statsStyle.statLabel}>Total Rochers</Text>
                     </View>
                     <View style={statsStyle.statDivider} />
                     <View style={statsStyle.statItem}>
                         <Text style={[statsStyle.statNumber, statsStyle.visibleText]}>{stats.visible}</Text>
-                        <Text style={statsStyle.statLabel}>Visible</Text>
+                        <Text style={statsStyle.statLabel}>Visibles</Text>
                     </View>
                     <View style={statsStyle.statDivider} />
                     <View style={statsStyle.statItem}>
                         <Text style={[statsStyle.statNumber, statsStyle.submergedText]}>{stats.submerged}</Text>
-                        <Text style={statsStyle.statLabel}>Submerged</Text>
+                        <Text style={statsStyle.statLabel}>Submergés</Text>
                     </View>
                 </View>
 
-                {/* Search Bar */}
+                {/* Barre de recherche */}
                 <View style={cardStyle.searchContainer}>
                     <TextInput
                         style={cardStyle.searchInput}
                         value={searchQuery}
                         onChangeText={setSearchQuery}
-                        placeholder="Search rocks by name..."
+                        placeholder="Rechercher des rochers par nom..."
                         placeholderTextColor="#999"
                     />
                     {searchQuery.length > 0 && (
@@ -157,14 +157,14 @@ export default function WaterLevelScreen() {
                     )}
                 </View>
 
-                {/* Filter Buttons */}
+                {/* Boutons de filtre */}
                 <View style={buttonStyle.filterContainer}>
                     <TouchableOpacity
                         style={[buttonStyle.filterButton, filter === 'all' && buttonStyle.filterButtonActive]}
                         onPress={() => setFilter('all')}
                     >
                         <Text style={[textStyle.filterText, filter === 'all' && textStyle.filterTextActive]}>
-                            All ({features.length})
+                            Tous ({features.length})
                         </Text>
                     </TouchableOpacity>
 
@@ -173,7 +173,7 @@ export default function WaterLevelScreen() {
                         onPress={() => setFilter('visible')}
                     >
                         <Text style={[textStyle.filterText, filter === 'visible' && textStyle.filterTextActive]}>
-                            Visible ({stats.visible})
+                            Visibles ({stats.visible})
                         </Text>
                     </TouchableOpacity>
 
@@ -182,25 +182,25 @@ export default function WaterLevelScreen() {
                         onPress={() => setFilter('submerged')}
                     >
                         <Text style={[textStyle.filterText, filter === 'submerged' && textStyle.filterTextActive]}>
-                            Submerged ({stats.submerged})
+                            Submergés ({stats.submerged})
                         </Text>
                     </TouchableOpacity>
                 </View>
 
-                {/* Results count */}
+                {/* Nombre de résultats */}
                 <Text style={textStyle.resultsText}>
-                    Showing {filteredFeatures.length} rock{filteredFeatures.length !== 1 ? 's' : ''}
-                    {searchQuery && ` matching "${searchQuery}"`}
+                    Affichage de {filteredFeatures.length} rocher{filteredFeatures.length !== 1 ? 's' : ''}
+                    {searchQuery && ` correspondant à "${searchQuery}"`}
                 </Text>
 
-                {/* Rocks List */}
+                {/* Liste des rochers */}
                 {filteredFeatures.map((item, index) => {
                     const name = item.properties?.nom ?? `#${index + 1}`;
-                    // Use hauteurAuDessusNiveauMer from JSON (convert string to number)
+                    // Utiliser hauteurAuDessusNiveauMer du JSON (convertir la chaîne en nombre)
                     const alt1 = parseFloat(item.properties?.altitude || "0");
                     const alt2 = item.properties?.alt2;
 
-                    // Calculate visibility
+                    // Calculer la visibilité
                     const { isVisible, visibilityHeight } = calculateVisibility(alt1, seaLevelValue, deltaValue);
 
                     return (
@@ -219,13 +219,13 @@ export default function WaterLevelScreen() {
                                     isVisible ? themeColor.visibleTheme : themeColor.submergedTheme
                                 ]}>
                                     <Text style={cardStyle.badgeText}>
-                                        {isVisible ? "VISIBLE" : "SUBMERGED"}
+                                        {isVisible ? "VISIBLE" : "SUBMERGÉ"}
                                     </Text>
                                 </View>
                             </View>
 
                             <View style={cardStyle.dataRow}>
-                                <Text style={cardStyle.label}>Height above sea level:</Text>
+                                <Text style={cardStyle.label}>Hauteur au-dessus du niveau de la mer :</Text>
                                 <Text style={cardStyle.value}>
                                     {alt1 !== null && !isNaN(alt1) ? `${alt1} m` : "N/A"}
                                 </Text>
@@ -233,26 +233,26 @@ export default function WaterLevelScreen() {
 
                             {alt2 !== null && alt2 !== undefined && (
                                 <View style={cardStyle.dataRow}>
-                                    <Text style={cardStyle.label}>Alt2:</Text>
+                                    <Text style={cardStyle.label}>Alt2 :</Text>
                                     <Text style={cardStyle.value}>{alt2} m</Text>
                                 </View>
                             )}
 
                             <View style={cardStyle.dataRow}>
-                                <Text style={cardStyle.label}>Sea Level (HE):</Text>
+                                <Text style={cardStyle.label}>Niveau de la mer (HE) :</Text>
                                 <Text style={cardStyle.value}>{seaLevelValue.toFixed(2)} m</Text>
                             </View>
 
                             <View style={cardStyle.dataRow}>
-                                <Text style={cardStyle.label}>Delta (Δ):</Text>
+                                <Text style={cardStyle.label}>Delta (Δ) :</Text>
                                 <Text style={cardStyle.value}>{deltaValue.toFixed(2)} m</Text>
                             </View>
 
                             <View style={cardStyle.infoBox}>
                                 <Text style={cardStyle.infoText}>
                                     {isVisible
-                                        ? `✅ Rock is ${visibilityHeight?.toFixed(2)}m above water`
-                                        : `❌ Rock is ${Math.abs(visibilityHeight || 0).toFixed(2)}m below water`
+                                        ? `✅ Le rocher est à ${visibilityHeight?.toFixed(2)}m au-dessus de l'eau`
+                                        : `❌ Le rocher est à ${Math.abs(visibilityHeight || 0).toFixed(2)}m sous l'eau`
                                     }
                                 </Text>
                             </View>
@@ -261,17 +261,17 @@ export default function WaterLevelScreen() {
                 })}
             </ScrollView>
 
-            {/* Footer Section - Fixed at bottom */}
+            {/* Section pied de page - Fixée en bas */}
             <View style={footerStyle.footer}>
                 <TouchableOpacity style={buttonStyle.action} onPress={saveData}>
-                    <Text style={buttonStyle.actionText}>Save Data</Text>
+                    <Text style={buttonStyle.actionText}>Sauvegarder</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={[buttonStyle.action, buttonStyle.actionReset]}
                     onPress={resetData}
                 >
-                    <Text style={buttonStyle.actionText}>Reset</Text>
+                    <Text style={buttonStyle.actionText}>Réinitialiser</Text>
                 </TouchableOpacity>
             </View>
         </View>

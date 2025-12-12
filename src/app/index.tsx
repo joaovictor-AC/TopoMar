@@ -1,4 +1,4 @@
-// Import navigation and core React Native components
+// Importer la navigation et les composants principaux de React Native
 import { buttonStyle } from "@/style/button/button_style";
 import { iconStyle } from "@/style/icon/icon_style";
 import { screenStyle } from "@/style/screen/screen_style";
@@ -6,19 +6,19 @@ import Feather from '@expo/vector-icons/Feather';
 import { useRouter } from "expo-router";
 import { Image, ImageBackground, StatusBar, TouchableOpacity, View } from "react-native";
 
-// --- Assets ---
-// Load all required images locally. 'require' ensures they are bundled with the app.
+// --- Actifs ---
+// Charger toutes les images requises localement. 'require' assure qu'elles sont empaquetées avec l'application.
 const OCAEN_BACKGROUN = require('../assets/images/home_screen.png');
 const MAP_PIN_ICON = require('../assets/images/map_pin.png');
 const CAMERA_ICON = require('../assets/images/camera.png');
 const WAVES_ICON = require('../assets/images/vector.png');
 
 /**
- * Main home screen component (Index route).
- * Displays navigation buttons over a background image.
+ * Composant principal de l'écran d'accueil (route Index).
+ * Affiche les boutons de navigation sur une image de fond.
  */
 export default function Index() {
-  // 'useRouter' hook provides navigation functions.
+  // Le hook 'useRouter' fournit les fonctions de navigation.
   const router = useRouter();
 
   return (
@@ -30,10 +30,10 @@ export default function Index() {
       <View style={screenStyle.container}>
         <View style={buttonStyle.buttonContainer}>
 
-          {/* Map Navigation Button */}
+          {/* Bouton de navigation Carte */}
           <TouchableOpacity
             style={buttonStyle.ellipseButton}
-            onPress={() => router.push("/maps")} // Navigate to the /maps screen on press
+            onPress={() => router.push("/maps")} // Naviguer vers l'écran /maps lors de l'appui
             activeOpacity={0.7}
           >
             <Image
@@ -43,10 +43,10 @@ export default function Index() {
             />
           </TouchableOpacity>
 
-          {/* Camera Navigation Button */}
+          {/* Bouton de navigation Caméra */}
           <TouchableOpacity
             style={buttonStyle.ellipseButton}
-            onPress={() => router.push("/camera")} // Navigate to the /camera screen on press
+            onPress={() => router.push("/camera")} // Naviguer vers l'écran /camera lors de l'appui
             activeOpacity={0.7}
           >
             <Image
@@ -56,10 +56,10 @@ export default function Index() {
             />
           </TouchableOpacity>
 
-          {/* Water Level Navigation Button */}
+          {/* Bouton de navigation Niveau d'eau */}
           <TouchableOpacity
             style={buttonStyle.ellipseButton}
-            onPress={() => router.push("/level")} // Navigate to the /level screen on press
+            onPress={() => router.push("/level")} // Naviguer vers l'écran /level lors de l'appui
             activeOpacity={0.7}
           >
             <Image
@@ -69,7 +69,7 @@ export default function Index() {
             />
           </TouchableOpacity>
 
-          {/* Change GeoJson data Button */}
+          {/* Bouton pour changer les données GeoJson */}
           <TouchableOpacity
             style={buttonStyle.ellipseButton}
             onPress={() => router.push("/database")}

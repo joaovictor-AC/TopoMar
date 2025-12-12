@@ -12,9 +12,6 @@ import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 export default function DatabaseScreen() {
     const {
         features,
-        seaLevel,
-        delta,
-        maxDistance,
         setFeatures,
         setDelta,
         setMaxDistance,
@@ -41,13 +38,13 @@ export default function DatabaseScreen() {
             try {
                 const json = JSON.parse(fileContent);
                 
-                // Basic validation
+                // Validation de base
                 if (!json.features || !Array.isArray(json.features)) {
-                    Alert.alert("Error", "Invalid JSON: 'features' array is missing.");
+                    Alert.alert("Erreur", "JSON invalide : le tableau 'features' est manquant.");
                     return;
                 }
 
-                // Update state
+                // Mettre à jour l'état
                 setFeatures(json.features);
                 
                 if (json.deltaReference) {
@@ -60,30 +57,30 @@ export default function DatabaseScreen() {
                     setMaxDistanceReference(String(json.maxDistanceReference));
                 }
                 
-                Alert.alert("Success", "JSON loaded! Please click 'Save Changes' to persist this data.");
+                Alert.alert("Succès", "JSON chargé ! Veuillez cliquer sur 'Sauvegarder les modifications' pour conserver ces données.");
 
             } catch (e) {
-                Alert.alert("Error", "Failed to parse JSON.");
+                Alert.alert("Erreur", "Échec de l'analyse du JSON.");
             }
 
         } catch (err) {
             console.error(err);
-            Alert.alert("Error", "Failed to pick file.");
+            Alert.alert("Erreur", "Échec de la sélection du fichier.");
         }
     };
 
     return (
         <View style={{ flex: 1 }}>
             <ScrollView style={screenStyle.background} contentContainerStyle={{ padding: 20, gap: 20 }}>
-                <Text style={screenStyle.title}>Database Management</Text>
+                <Text style={screenStyle.title}>Gestion de la base de données</Text>
 
                 <View style={cardStyle.seaLevelCard}>
-                    <Text style={cardStyle.seaLevelLabel}>Current Data Status</Text>
+                    <Text style={cardStyle.seaLevelLabel}>État actuel des données</Text>
                     <View style={{ marginTop: 10, gap: 5, marginBottom: 15 }}>
-                        <Text style={textStyle.filterText}>• Total Features: {features.length}</Text>
+                        <Text style={textStyle.filterText}>• Total des éléments : {features.length}</Text>
                     </View>
 
-                    <Text style={[cardStyle.seaLevelLabel, { fontSize: 16, marginBottom: 10 }]}>Features List</Text>
+                    <Text style={[cardStyle.seaLevelLabel, { fontSize: 16, marginBottom: 10 }]}>Liste des éléments</Text>
                     <View style={{ maxHeight: 300, backgroundColor: 'rgba(0,0,0,0.05)', borderRadius: 8, borderWidth: 1, borderColor: 'rgba(0,0,0,0.1)' }}>
                         <ScrollView nestedScrollEnabled style={{ padding: 5 }}>
                             {features.map((item, index) => (
@@ -97,7 +94,7 @@ export default function DatabaseScreen() {
                                     alignItems: 'center'
                                 }}>
                                     <Text style={[textStyle.filterText, { flex: 2, fontSize: 14 }]} numberOfLines={1}>
-                                        {index + 1}. {item.properties.nom || 'Unnamed'}
+                                        {index + 1}. {item.properties.nom || 'Sans nom'}
                                     </Text>
                                 </View>
                             ))}
@@ -107,15 +104,15 @@ export default function DatabaseScreen() {
 
                 <View style={{ gap: 15 }}>
                     <TouchableOpacity style={buttonStyle.action} onPress={pickDocument}>
-                        <Text style={buttonStyle.actionText}>Import JSON File</Text>
+                        <Text style={buttonStyle.actionText}>Importer un fichier JSON</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={buttonStyle.action} onPress={saveData}>
-                        <Text style={buttonStyle.actionText}>Save Changes</Text>
+                        <Text style={buttonStyle.actionText}>Sauvegarder les modifications</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={[buttonStyle.action, buttonStyle.actionReset]} onPress={resetData}>
-                        <Text style={buttonStyle.actionText}>Reset to Default</Text>
+                        <Text style={buttonStyle.actionText}>Réinitialiser par défaut</Text>
                     </TouchableOpacity>
                 </View>
 

@@ -1,1 +1,1 @@
-export const HAUTER_REFERENCE = 4.5; // Reference height in meters
+export const HAUTER_REFERENCE = 4.5; // Hauteur de référence en mètres

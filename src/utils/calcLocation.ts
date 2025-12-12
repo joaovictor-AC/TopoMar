@@ -2,18 +2,19 @@ import { LocationObjectCoords } from "expo-location";
 import { Coordinates } from "../types/locationTypes";
 
 /**
- * Converts an angle from degrees to radians.
- * @param {number} degrees - The angle in degrees to convert.
- * @returns {number} The equivalent angle in radians.
+ * Convertit un angle de degrés en radians.
+ * @param {number} degrees - L'angle en degrés à convertir.
+ * @returns {number} L'angle équivalent en radians.
  * @internal
  */
 const toRadians = (degrees: number): number => {
   return degrees * (Math.PI / 180);
 };
 
-/** Converts an angle from radians to degrees.
- * @param {number} radians - The angle in radians to convert.
- * @returns {number} The equivalent angle in degrees.
+/** 
+ * Convertit un angle de radians en degrés.
+ * @param {number} radians - L'angle en radians à convertir.
+ * @returns {number} L'angle équivalent en degrés.
  * @internal
  */
 const toDegrees = (radians: number): number => {
@@ -21,13 +22,13 @@ const toDegrees = (radians: number): number => {
 }
 
 /**
- * Calculates the distance between two geographical points.
+ * Calcule la distance entre deux points géographiques.
  *
- * @param {LocationObjectCoords} currentLocation - The cellphone coordinates
- * @param {Coordinates} targetLocation - The destination point coordinates.
- * @returns {number} The calculated distance between the two points in meters.
+ * @param {LocationObjectCoords} currentLocation - Les coordonnées de l'appareil.
+ * @param {Coordinates} targetLocation - Les coordonnées du point de destination.
+ * @returns {number} La distance calculée entre les deux points en mètres.
  *
- * @see {@link https://www.movable-type.co.uk/scripts/latlong.html| How to calculate the distance ?} for more details on the calculations.
+ * @see {@link https://www.movable-type.co.uk/scripts/latlong.html| Comment calculer la distance ?} pour plus de détails sur les calculs.
  *
  */
 export const calculateDistance = (
@@ -35,7 +36,7 @@ export const calculateDistance = (
   targetLocation: Coordinates
 ): number => {
 
-  // Earth's mean radius in meters
+  // Rayon moyen de la Terre en mètres
   const R = 6371e3;
 
   const phi1 = toRadians(currentLocation.latitude);
@@ -48,7 +49,7 @@ export const calculateDistance = (
     targetLocation.longitude - currentLocation.longitude
   );
 
-  // Haversine formula part 'a': a = sin²(Δφ/2) + cos φ1 ⋅ cos φ2 ⋅ sin²(Δλ/2)
+  // Formule de Haversine partie 'a': a = sin²(Δφ/2) + cos φ1 ⋅ cos φ2 ⋅ sin²(Δλ/2)
   const a =
     Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
     Math.cos(phi1) *
@@ -56,21 +57,21 @@ export const calculateDistance = (
       Math.sin(deltaLambda / 2) *
       Math.sin(deltaLambda / 2);
 
-  // Haversine formula part 'c': c = 2 ⋅ atan2(√a, √(1−a))
+  // Formule de Haversine partie 'c': c = 2 ⋅ atan2(√a, √(1−a))
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-  // Final distance: d = R ⋅ c
+  // Distance finale : d = R ⋅ c
   return R * c;
 };
 
 /**
- * Calculates the bearing between two geographical points.
+ * Calcule l'azimut (bearing) entre deux points géographiques.
  *
- * @param {LocationObjectCoords} currentLocation - The cellphone coordinates
- * @param {Coordinates} targetLocation - The destination point coordinates.
- * @returns {number} The initial bearing in degrees from the current location to the target.
+ * @param {LocationObjectCoords} currentLocation - Les coordonnées de l'appareil.
+ * @param {Coordinates} targetLocation - Les coordonnées du point de destination.
+ * @returns {number} L'azimut initial en degrés depuis la position actuelle vers la cible.
  *
- * @see {@link https://www.movable-type.co.uk/scripts/latlong.html| How to calculate the bearing ?} for more details on the calculations.
+ * @see {@link https://www.movable-type.co.uk/scripts/latlong.html| Comment calculer l'azimut ?} pour plus de détails sur les calculs.
  */
 
 export const calculateBearing = (
@@ -89,10 +90,10 @@ export const calculateBearing = (
     Math.cos(phi1) * Math.sin(phi2) -
     Math.sin(phi1) * Math.cos(phi2) * Math.cos(deltaLambda);
 
-  // Bearing in radians
+  // Azimut en radians
   let bearingRad = Math.atan2(y, x);
 
-  // Final bearing in degrees
-  return (toDegrees(bearingRad) + 360) % 360; // Normalize to 0-360 degrees
+  // Azimut final en degrés (normalisé entre 0 et 360)
+  return (toDegrees(bearingRad) + 360) % 360; 
   
 };

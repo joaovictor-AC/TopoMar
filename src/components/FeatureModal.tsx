@@ -14,7 +14,7 @@ export default function FeatureModal({ visible, onClose, feature, seaLevel, delt
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
-    // When modal closes, unload sound
+    // Lorsque le modal se ferme, décharger le son
     if (!visible && sound) {
       (async () => {
         try { await sound.stopAsync(); } catch (e) {}
@@ -23,7 +23,7 @@ export default function FeatureModal({ visible, onClose, feature, seaLevel, delt
       setSound(null);
       setIsPlaying(false);
     }
-    // cleanup on unmount
+    // Nettoyage lors du démontage
     return () => {
       if (sound) {
         (async () => {
@@ -38,12 +38,12 @@ export default function FeatureModal({ visible, onClose, feature, seaLevel, delt
 
   const alt = parseFloat(feature?.properties?.altitude || '0');
   const { isVisible } = calculateVisibility(alt, seaLevel, delta);
-  const visibilityText = isVisible ? 'VISIBLE' : 'SUBMERGED';
+  const visibilityText = isVisible ? 'VISIBLE' : 'SUBMERGÉ';
 
   async function handlePlayAudio() {
     if (!feature) return;
 
-    // If already playing, stop/unload
+    // Si déjà en lecture, arrêter/décharger
     if (sound && isPlaying) {
       try { await sound.stopAsync(); } catch (e) {}
       try { await sound.unloadAsync(); } catch (e) {}
@@ -107,15 +107,15 @@ export default function FeatureModal({ visible, onClose, feature, seaLevel, delt
 
           <View style={{ paddingTop: 15, gap: 10 }}>
             <Text>
-              <Text style={modalStyle.label}>Type: </Text>
+              <Text style={modalStyle.label}>Type : </Text>
               <Text style={modalStyle.value}>{feature?.properties?.featureType || ''}</Text>
             </Text>
             <Text>
-              <Text style={modalStyle.label}>Description: </Text>
+              <Text style={modalStyle.label}>Description : </Text>
               <Text style={modalStyle.value}>{feature?.properties?.description || ''}</Text>
             </Text>
             <Text>
-              <Text style={modalStyle.label}>Altitude: </Text>
+              <Text style={modalStyle.label}>Altitude : </Text>
               <Text style={modalStyle.value}>{feature?.properties?.altitude || ''}</Text>
             </Text>
           </View>

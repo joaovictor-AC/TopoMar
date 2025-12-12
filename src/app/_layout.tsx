@@ -1,46 +1,46 @@
 import { Stack } from "expo-router";
 import { useState } from "react";
-// Import the custom splash screen component.
+// Importer le composant d'écran de démarrage personnalisé.
 import CustomSplashScreen from "../components/splashScreen";
 
 /**
- * This is the Root Layout for the entire app.
- * It controls the initial splash screen and defines the main navigation stack.
+ * Ceci est la mise en page racine pour toute l'application.
+ * Elle contrôle l'écran de démarrage initial et définit la pile de navigation principale.
  */
 export default function RootLayout() {
-  // 'showSplash' state controls whether the splash screen is visible.
-  // It starts as 'true' when the app loads.
+  // L'état 'showSplash' contrôle si l'écran de démarrage est visible.
+  // Il commence à 'true' au chargement de l'application.
   const [showSplash, setShowSplash] = useState(true);
 
-  // --- Splash Screen Logic ---
-  // Conditionally render the splash screen first.
+  // --- Logique de l'écran de démarrage ---
+  // Rendre conditionnellement l'écran de démarrage en premier.
   if (showSplash) {
     return (
       <CustomSplashScreen 
-        // Pass a function to the splash screen.
-        // 'CustomSplashScreen' will call this 'onFinish' function when it is done.
-        onFinish={() => setShowSplash(false)} // This sets 'showSplash' to false, hiding it.
+        // Passer une fonction à l'écran de démarrage.
+        // 'CustomSplashScreen' appellera cette fonction 'onFinish' quand il aura terminé.
+        onFinish={() => setShowSplash(false)} // Cela met 'showSplash' à faux, le masquant.
       />
     );
   }
 
-  // --- Main App Navigation ---
-  // After the splash screen is hidden (showSplash is false), render the main app.
+  // --- Navigation principale de l'application ---
+  // Une fois l'écran de démarrage masqué (showSplash est faux), rendre l'application principale.
   return (
-    // 'Stack' is the navigator that allows pushing/popping screens.
+    // 'Stack' est le navigateur qui permet d'empiler/dépiler les écrans.
     <Stack>
-      {/* Define each screen in the stack. */}
-      {/* 'index' is the home screen, with its header hidden. */}
+      {/* Définir chaque écran dans la pile. */}
+      {/* 'index' est l'écran d'accueil, avec son en-tête masqué. */}
       <Stack.Screen name="index" options={{headerShown: false}}/>
       
-      {/* These screens are part of a '(tabs)' layout group. */}
-      {/* The headers for the camera and maps screens are hidden. */}
+      {/* Ces écrans font partie d'un groupe de mise en page '(tabs)'. */}
+      {/* Les en-têtes pour les écrans caméra et cartes sont masqués. */}
       <Stack.Screen name="(tabs)/(camera)/camera" options={{headerShown: false}}/>
       <Stack.Screen name="(tabs)/(maps)/maps" options={{headerShown: false}}/>
       
-      {/* The 'level' screen will show a header with a custom title. */}
-      <Stack.Screen name="(tabs)/(water_level)/level" options={{headerTitle: "Water Level"}}/>
-      <Stack.Screen name="(tabs)/(database)/database" options={{headerTitle: "Database"}}/>
+      {/* L'écran 'level' affichera un en-tête avec un titre personnalisé. */}
+      <Stack.Screen name="(tabs)/(water_level)/level" options={{headerTitle: "Niveau d'eau"}}/>
+      <Stack.Screen name="(tabs)/(database)/database" options={{headerTitle: "Base de données"}}/>
     </Stack>
   );
 }
